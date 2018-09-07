@@ -1,0 +1,39 @@
+Get les utilisateurs non-matchés
+GET http://{}:8080/rest/v1/matchmaking
+{
+	"availableStudents": [{
+		"cip": "",
+		"name": "",
+		"lastname": ""
+	}],
+	
+	"unavailableStudents": [
+		[{
+				"cip": "",
+				"name": ""
+			},
+			{
+				"cip": "",
+				"name": ""
+			}
+		],
+		[{
+				"cip": "",
+				"name": ""
+			},
+			{
+				"cip": "",
+				"name": ""
+			}
+		]
+	]
+}
+
+
+Request pour envoyer une invitation au CIP dans le body ou accepter le match
+{
+	"from":"cip",
+	"to":"cip",
+	"status":"Accepted/Interested"
+}
+
