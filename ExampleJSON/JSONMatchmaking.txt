@@ -1,5 +1,5 @@
-Get les utilisateurs non-matchés
-GET http://{}:8080/rest/v1/matchmaking
+﻿Get les utilisateurs non-matchés
+GET http://{url}:{port}/rest/v1/matchmaking
 {
 	"availableStudents": [{
 		"cip": "",
@@ -31,6 +31,7 @@ GET http://{}:8080/rest/v1/matchmaking
 
 
 Request pour envoyer une invitation au CIP dans le body ou accepter le match
+POST http://{url}:{port}/rest/v1/matchmaking
 {
 	"from":"cip",
 	"to":"cip",
