@@ -1,0 +1,26 @@
+Get les requêtes de changement de groupe
+GET http://{url}:{port}/rest/v1/switchgroup/
+{
+	"changeRequests": [{
+		"requestId; "",
+		"cip": "",
+		"originTutorat": "",
+		"requestedTutorat": ["", ""]
+	}]
+}
+
+Request pour postuler une requête de changement de groupe avec les tutorats voulus
+POST http://{url}:{port}/rest/v1/switchgroup
+{
+	"requestedTutorat": ["", ""]
+}
+
+Request pour accepter une requête d'échange 
+POST http://{url}:{port}/rest/v1/switchgroup/{requestId}
+{
+}
+
+Request pour annuler un échange
+DELETE http://{url}:{port}/rest/v1/switchgroup/{requestId}
+{
+}
