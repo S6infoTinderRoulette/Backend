@@ -10,20 +10,24 @@ GET http://{url}:{port}/rest/v1/matchmaking
 	"unavailableStudents": [
 		[{
 				"cip": "",
-				"name": ""
+				"name": "",
+				"lastname": ""
 			},
 			{
 				"cip": "",
-				"name": ""
+				"name": "",
+				"lastname": ""
 			}
 		],
 		[{
 				"cip": "",
-				"name": ""
+				"name": "",
+				"lastname": ""
 			},
 			{
 				"cip": "",
-				"name": ""
+				"name": "",
+				"lastname": ""
 			}
 		]
 	]
