@@ -12,16 +12,18 @@ public class MatchMaking {
         this.cip = cip;
     }
 
-    public long GetId() {
+    public long getId() {
         return this.id;
     }
 
-    public String GetNom() {
+    public String getNom() {
         return this.nom;
     }
 
-    public String GetCIP() {
+    public String getCip() {
         return this.cip;
     }
+
+
 
 }
