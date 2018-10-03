@@ -1,4 +1,4 @@
-/*package com.tinderroulette.backend.rest.controller;
+package com.tinderroulette.backend.rest.controller;
 
 import com.tinderroulette.backend.rest.dao.RequestDao;
 import com.tinderroulette.backend.rest.exceptions.EmptyJsonResponse;
@@ -68,4 +68,3 @@ public class RequestController {
         }
     }
 }
-*/

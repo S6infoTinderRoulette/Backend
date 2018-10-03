@@ -64,7 +64,7 @@ public class GroupTypeController {
 
     }
 
-    @DeleteMapping (value = "/members/{idGroupId}/")
+    @DeleteMapping (value = "/grouptype/{idGroupId}/")
     public ResponseEntity <Void> deleteGroupType (@PathVariable int idGroupId) {
         GroupType groupTest = groupTypeDao.findByIdGroupType(idGroupId);
         if (groupTest == null) {
