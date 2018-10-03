@@ -3,9 +3,9 @@ package com.tinderroulette.backend.rest.controller;
 
 import com.tinderroulette.backend.rest.dao.GroupTypeDao;
 import com.tinderroulette.backend.rest.exceptions.EmptyJsonResponse;
+import com.tinderroulette.backend.rest.exceptions.GroupTypeIntrouvableException;
 import com.tinderroulette.backend.rest.exceptions.MembersIntrouvableException;
 import com.tinderroulette.backend.rest.model.GroupType;
-import com.tinderroulette.backend.rest.model.Members;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -36,7 +36,7 @@ public class GroupTypeController {
     public ResponseEntity<Void> addGroupType (@Valid @RequestBody GroupType groupType){
         GroupType groupTest = groupTypeDao.findByIdGroupType(groupType.getIdGroupType());
         if (groupTest != null) {
-            throw new MembersIntrouvableException("Le membre correspondant au CIP : " + groupType.getIdGroupType() + " est déjà présent dans la base de données");
+            throw new GroupTypeIntrouvableException("Le membre correspondant au CIP : " + groupType.getIdGroupType() + " est déjà présent dans la base de données");
         } else {
             GroupType groupTypePut = groupTypeDao.save(groupType);
             if (groupTypePut == null) {
@@ -52,7 +52,7 @@ public class GroupTypeController {
     public ResponseEntity<Void> updateGroupType (@Valid @RequestBody GroupType groupType){
         GroupType groupTest = groupTypeDao.findByIdGroupType(groupType.getIdGroupType());
         if (groupTest == null) {
-            throw new MembersIntrouvableException("Le membre correspondant au CIP : " + groupType.getIdGroupType() + " est déjà présent dans la base de données");
+            throw new GroupTypeIntrouvableException("Le membre correspondant au CIP : " + groupType.getIdGroupType() + " est déjà présent dans la base de données");
         } else {
             GroupType groupTypePut = groupTypeDao.save(groupType);
             if (groupTypePut == null) {
@@ -68,7 +68,7 @@ public class GroupTypeController {
     public ResponseEntity <Void> deleteGroupType (@PathVariable int idGroupId) {
         GroupType groupTest = groupTypeDao.findByIdGroupType(idGroupId);
         if (groupTest == null) {
-            throw new MembersIntrouvableException("Le membre correspondant au CIP : " + idGroupId + " n'est pas présent dans la base de données");
+            throw new GroupTypeIntrouvableException("Le membre correspondant au CIP : " + idGroupId + " n'est pas présent dans la base de données");
         } else {
             groupTypeDao.deleteByIdGroupType(idGroupId);
             return new ResponseEntity(new EmptyJsonResponse(), HttpStatus.OK);
