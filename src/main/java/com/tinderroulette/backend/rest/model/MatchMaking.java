@@ -1,4 +1,4 @@
-package com.tinderroulette.backend.rest;
+package com.tinderroulette.backend.rest.model;
 
 public class MatchMaking {
 
