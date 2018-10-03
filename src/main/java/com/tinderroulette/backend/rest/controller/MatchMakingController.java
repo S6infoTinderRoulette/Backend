@@ -1,6 +1,7 @@
-package com.tinderroulette.backend.rest;
+package com.tinderroulette.backend.rest.controller;
 
 
+import com.tinderroulette.backend.rest.model.MatchMaking;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
