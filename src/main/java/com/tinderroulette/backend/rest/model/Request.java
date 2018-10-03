@@ -1,9 +1,16 @@
-package com.tinderroulette.backend.rest.model;
+/*package com.tinderroulette.backend.rest.model;
 
+import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.IdClass;
+import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
+import java.io.Serializable;
 import java.util.Date;
 
+@Entity
+@Table(name = "request")
+@IdClass(RequestId.class)
 public class Request {
 
     @Id
@@ -72,3 +79,4 @@ public class Request {
         this.requestTimestamp = requestTimestamp;
     }
 }
+*/

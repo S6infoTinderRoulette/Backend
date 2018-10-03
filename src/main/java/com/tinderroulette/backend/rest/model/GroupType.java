@@ -1,8 +1,16 @@
 package com.tinderroulette.backend.rest.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.springframework.lang.Nullable;
+
+import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
+
+@Entity
+@Table(name = "grouptype")
 public class GroupType {
 
     @Id
@@ -11,9 +19,11 @@ public class GroupType {
     @NotNull
     private String type;
 
-    private int minDefault;
+    @Nullable
+    private Integer minDefault;
 
-    private int maxDefault;
+    @Nullable
+    private Integer maxDefault;
 
     public GroupType() {
     }

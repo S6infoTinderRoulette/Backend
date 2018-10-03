@@ -1,4 +1,4 @@
-package com.tinderroulette.backend.rest.dao;
+/*package com.tinderroulette.backend.rest.dao;
 
 import com.tinderroulette.backend.rest.model.Request;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -14,3 +14,4 @@ public interface RequestDao extends JpaRepository<Request,Long> {
     List<Request> findAll ();
     Request findByCipRequestedAndCipSeekingAndIdActivityAndIdRequestType (String CipRequested, String CipSeeking, int IdActivity, int IdRequestType);
 }
+*/

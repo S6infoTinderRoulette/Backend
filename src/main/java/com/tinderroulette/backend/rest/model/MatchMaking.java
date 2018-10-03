@@ -1,6 +1,12 @@
-package com.tinderroulette.backend.rest.model;
+/*package com.tinderroulette.backend.rest.model;
 
+import javax.persistence.Entity;
+import javax.persistence.Table;
+
+@Entity
+@Table(name = "matchmaking")
 public class MatchMaking {
+
 
     private final long id;
     private final String nom;
@@ -27,3 +33,4 @@ public class MatchMaking {
 
 
 }
+*/

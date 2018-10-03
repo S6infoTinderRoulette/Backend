@@ -1,21 +1,27 @@
 package com.tinderroulette.backend.rest.model;
 
+import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
+
+@Entity
+@Table(name = "requesttype")
 public class RequestType {
 
     @Id
     private int idRequestType;
-    @NotNull
-    private String Type;
 
-    public RequestType() {
+    @NotNull
+    private String requestType;
+
+    public RequestType(int idRequestType, @NotNull String requestType) {
+        this.idRequestType = idRequestType;
+        this.requestType = requestType;
     }
 
-    public RequestType(int idRequestType, @NotNull String type) {
-        this.idRequestType = idRequestType;
-        Type = type;
+    public RequestType() {
     }
 
     public int getIdRequestType() {
@@ -26,11 +32,11 @@ public class RequestType {
         this.idRequestType = idRequestType;
     }
 
-    public String getType() {
-        return Type;
+    public String getRequestType() {
+        return requestType;
     }
 
-    public void setType(String type) {
-        Type = type;
+    public void setRequestType(String requestType) {
+        this.requestType = requestType;
     }
 }

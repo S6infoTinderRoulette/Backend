@@ -1,21 +1,25 @@
 package com.tinderroulette.backend.rest.model;
 
+import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
+@Entity
+@Table(name = "memberstatus")
 public class MemberStatus {
 
     @Id
     private int idMemberStatus;
     @NotNull
-    private String Status;
+    private String status;
 
     public MemberStatus() {
     }
 
-    public MemberStatus(int idMemberStatus, String status) {
+    public MemberStatus(int idMemberStatus, String status1) {
         this.idMemberStatus = idMemberStatus;
-        Status = status;
+        status = status1;
     }
 
     public int getIdMemberStatus() {
@@ -27,10 +31,10 @@ public class MemberStatus {
     }
 
     public String getStatus() {
-        return Status;
+        return status;
     }
 
-    public void setStatus(String status) {
-        Status = status;
+    public void setStatus(String status1) {
+        status = status1;
     }
 }
