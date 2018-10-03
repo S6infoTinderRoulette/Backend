@@ -1,4 +1,4 @@
-package com.tinderroulette.backend.rest.controller;
+/*package com.tinderroulette.backend.rest.controller;
 
 
 import com.tinderroulette.backend.rest.model.MatchMaking;
@@ -26,3 +26,4 @@ public class MatchMakingController {
                 String.format(templateName, name), String.format(templateCIP, cip));
     }
 }
+*/

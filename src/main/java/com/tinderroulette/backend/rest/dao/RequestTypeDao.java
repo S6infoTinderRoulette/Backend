@@ -12,7 +12,7 @@ public interface RequestTypeDao extends JpaRepository<RequestType,Long> {
     RequestType save (RequestType requestType);
     List<RequestType> findAll();
     RequestType findByIdRequestType (int idRequestType);
-    RequestType findByType (String Type);
+    RequestType findByRequestType (String Type);
     void deleteByIdRequestType (int idRequestType);
 
 }

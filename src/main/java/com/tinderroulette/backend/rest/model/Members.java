@@ -3,26 +3,27 @@ package com.tinderroulette.backend.rest.model;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.Table;
 
 @Entity
+@Table(name = "members")
 public class Members {
 
     @Id
     private String cip;
-    private int id_member_status;
-    private String last_name;
-    private String first_name;
+    private int idMemberStatus;
+    private String lastName;
+    private String firstName;
     private String email;
 
-    public Members (){
-
+    public Members() {
     }
 
-    public Members(String cip, int id_member_status, String last_name, String first_name, String email) {
+    public Members(String cip, int idMemberStatus, String lastName, String firstName, String email) {
         this.cip = cip;
-        this.id_member_status = id_member_status;
-        this.last_name = last_name;
-        this.first_name = first_name;
+        this.idMemberStatus = idMemberStatus;
+        this.lastName = lastName;
+        this.firstName = firstName;
         this.email = email;
     }
 
@@ -34,28 +35,28 @@ public class Members {
         this.cip = cip;
     }
 
-    public int getId_member_status() {
-        return id_member_status;
+    public int getIdMemberStatus() {
+        return idMemberStatus;
     }
 
-    public void setId_member_status(int id_member_status) {
-        this.id_member_status = id_member_status;
+    public void setIdMemberStatus(int idMemberStatus) {
+        this.idMemberStatus = idMemberStatus;
     }
 
-    public String getLast_name() {
-        return last_name;
+    public String getLastName() {
+        return lastName;
     }
 
-    public void setLast_name(String last_name) {
-        this.last_name = last_name;
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
     }
 
-    public String getFirst_name() {
-        return first_name;
+    public String getFirstName() {
+        return firstName;
     }
 
-    public void setFirst_name(String first_name) {
-        this.first_name = first_name;
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
     }
 
     public String getEmail() {

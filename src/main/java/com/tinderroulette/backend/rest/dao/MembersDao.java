@@ -11,9 +11,9 @@ public interface MembersDao extends JpaRepository<Members, String> {
 
     Members save (Members members);
     Members findByCip (String cip);
-    List <Members> findByLast_name (String LastName);
-    List <Members> findById_member_status (String idMember);
-    List <Members> findAll (String idMember);
+    List <Members> findByLastName (String LastName);
+    List <Members> findByIdMemberStatus (String idMember);
+    List <Members> findAll ();
     void deleteByCip (String cip);
 
 
