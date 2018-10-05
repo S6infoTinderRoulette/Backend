@@ -18,18 +18,19 @@ BEGIN
 	nb_membre := (SELECT COUNT(cip) FROM temp_groups);
 	
 	IF (nb_groups = 2) THEN		
-		IF (SELECT COALESCE(tinderroulette.group_size_check(nb_membre::int,_id_activity),false)) THEN
-			RETURN QUERY (SELECT 1);
+		IF (tinderroulette.group_size_check(nb_membre::int,_id_activity)) THEN
+			RETURN QUERY (SELECT 2); RETURN;
 		END IF;
 	ELSIF (nb_groups = 1) THEN
-		IF (SELECT COALESCE(tinderroulette.group_size_check(nb_membre + 1,_id_activity),false)) THEN
-			RETURN QUERY (SELECT 2);
+		IF (tinderroulette.group_size_check(nb_membre::int + 1,_id_activity)) THEN
+			RETURN QUERY (SELECT 1); RETURN;
 		END IF;
 	ELSE
-		IF (SELECT COALESCE(tinderroulette.group_size_check(2,_id_activity),false)) THEN
-			RETURN QUERY (SELECT 3);
+		IF (tinderroulette.group_size_check(2,_id_activity)) THEN
+			RETURN QUERY (SELECT 0); RETURN;
 		END IF;
 	END IF;
+	RETURN QUERY (SELECT -1);
 	DROP TABLE temp_groups;
 END;
 $BODY$
