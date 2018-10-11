@@ -6,15 +6,19 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-
 @RestController
 public class ConfigurationController {
-    @RequestMapping("/index")
-    public String index() {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if (auth != null && auth.getPrincipal() != null && auth.getPrincipal() instanceof UserDetails) {
-            return ((UserDetails) auth.getPrincipal()).getUsername();
-        }
-        return "cc";
-    }
+	@RequestMapping("/index")
+	public String index() {
+		return this.getAuthUser();
+	}
+
+	public static String getAuthUser() {
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		System.out.println(auth);
+		if (auth != null && auth.getPrincipal() != null && auth.getPrincipal() instanceof UserDetails) {
+			return ((UserDetails) auth.getPrincipal()).getUsername();
+		}
+		return "cc";
+	}
 }

@@ -1,15 +1,19 @@
 package com.tinderroulette.backend.rest.controller;
 
-import java.util.Map;
+import java.util.List;
 
-import org.json.JSONArray;
 import org.json.JSONObject;
-import org.springframework.http.MediaType;
+import org.springframework.http.HttpEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.tinderroulette.backend.rest.CAS.ConfigurationController;
 import com.tinderroulette.backend.rest.dao.MatchMakingDao;
+import com.tinderroulette.backend.rest.model.GroupStudent;
+import com.tinderroulette.backend.rest.model.MemberClass;
 
 @RestController
 public class MatchMakingController {
@@ -19,13 +23,21 @@ public class MatchMakingController {
 		this.matchmakingDao = matchmakingDao;
 	}
 
-	@GetMapping(value = "/matchmaking/{idActivity}/", produces = MediaType.APPLICATION_JSON_VALUE)
-	public Map<String, Object> findFreeSpot(@PathVariable int idActivity) {
-		JSONArray singleMembers = new JSONArray(matchmakingDao.findAllFreeUser(idActivity));
-		JSONArray openGroups = new JSONArray(matchmakingDao.findAllIncompleteGroups(idActivity));
-		JSONObject freeSpot = new JSONObject();
-		freeSpot.put("singleMembers", singleMembers);
-		freeSpot.put("openGroup", openGroups);
-		return freeSpot.toMap();
+	@GetMapping(value = "/matchmaking/members/{idActivity}/")
+	public List<MemberClass> findFreeMembers(@PathVariable int idActivity) {
+		return matchmakingDao.findAllFreeUser(idActivity);
+	}
+
+	@GetMapping(value = "/matchmaking/groups/{idActivity}/")
+	public List<GroupStudent> findFreeGroup(@PathVariable int idActivity) {
+		return matchmakingDao.findAllIncompleteGroups(idActivity);
+	}
+
+	@ResponseBody
+	@PostMapping(value = "/matchmaking/{idActivity}/")
+	public boolean mergeTeam(HttpEntity<String> httpEntity, @PathVariable int idActivity) {
+		JSONObject json = new JSONObject(httpEntity.getBody());
+		String currUser = ConfigurationController.getAuthUser();
+		return matchmakingDao.mergeTeam(json.getString("cip"), currUser, idActivity);
 	}
 }
