@@ -15,7 +15,7 @@ public class CASConfiguration {
     @Bean
     public ServiceProperties serviceProperties() {
         ServiceProperties serviceProperties = new ServiceProperties();
-        serviceProperties.setService("http://localhost:8080/login/cas");
+		serviceProperties.setService("http://localhost:8000/login/cas");
         serviceProperties.setSendRenew(true);
         return serviceProperties;
     }
