@@ -1,10 +1,14 @@
 package com.tinderroulette.backend.rest.model;
 
+import java.util.Date;
+
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
-import java.util.Date;
+
+import org.springframework.lang.Nullable;
 
 @Entity
 @Table(name = "logs")
@@ -18,7 +22,8 @@ public class Logs {
     @NotNull
     private String description;
 
-    @NotNull
+	@Nullable
+	@Column(insertable = false)
     private Date logTimestamp;
 
     public Logs(int idLog, String cip, String description, Date logTimestamp) {

@@ -28,9 +28,10 @@ public class MatchMakingController {
 		return matchmakingDao.findAllFreeUser(idActivity);
 	}
 
-	@GetMapping(value = "/matchmaking/groups/{idActivity}/")
-	public List<GroupStudent> findFreeGroup(@PathVariable int idActivity) {
-		return matchmakingDao.findAllIncompleteGroups(idActivity);
+	@GetMapping(value = "/matchmaking/groups/{idActivity}/{getOpen}/")
+	public List<GroupStudent> findFreeGroup(@PathVariable int idActivity, @PathVariable boolean getOpen) {
+		return getOpen ? matchmakingDao.findAllIncompleteGroups(idActivity)
+				: matchmakingDao.findAllFullGroups(idActivity);
 	}
 
 	@ResponseBody
