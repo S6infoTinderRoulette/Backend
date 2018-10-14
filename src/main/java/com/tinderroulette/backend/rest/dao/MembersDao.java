@@ -10,6 +10,7 @@ import java.util.List;
 public interface MembersDao extends JpaRepository<Members, String> {
 
     Members save (Members members);
+    Members save (List<Members> members); //useful for recovering json data
     Members findByCip (String cip);
     List <Members> findByLastName (String LastName);
     List <Members> findByIdMemberStatus (String idMember);

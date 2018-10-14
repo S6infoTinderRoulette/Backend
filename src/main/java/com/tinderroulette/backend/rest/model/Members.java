@@ -1,20 +1,26 @@
 package com.tinderroulette.backend.rest.model;
 
 
+import com.fasterxml.jackson.annotation.JsonAlias;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
 @Table(name = "members")
+@JsonPropertyOrder({"cip_etudiant", "courriel", "nom", "prenom"})
+@JsonIgnoreProperties({"app","cote_r","departement","inscription", "profil_id", "programme","trimestre_id", "unit_id","idMemberStatus"})
 public class Members {
 
     @Id
-    private String cip;
+    @JsonAlias({ "cip_etudiant", "cip" }) private String cip;
     private int idMemberStatus;
-    private String lastName;
-    private String firstName;
-    private String email;
+    @JsonAlias({ "nom", "lastName" }) private String lastName;
+    @JsonAlias({ "prenom", "firstName" }) private String firstName;
+    @JsonAlias({ "courriel", "email" }) private String email;
 
     public Members() {
     }
