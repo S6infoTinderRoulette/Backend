@@ -36,7 +36,7 @@ public class TestListener extends AbstractTestExecutionListener {
     @Autowired
     private ApDao apDao;
 
-	@Autowired
+    @Autowired
     private AppDao appDao;
 
     @Autowired
@@ -57,11 +57,11 @@ public class TestListener extends AbstractTestExecutionListener {
     @Autowired
     private MemberClassDao memberClassDao;
 
-	@Autowired
-	private MembersDao membersDao;
+    @Autowired
+    private MembersDao membersDao;
 
-	@Autowired
-	private MemberStatusDao memberStatusDao;
+    @Autowired
+    private MemberStatusDao memberStatusDao;
 
     @Autowired
     private RequestDao requestDao;
@@ -69,44 +69,43 @@ public class TestListener extends AbstractTestExecutionListener {
     @Autowired
     private RequestTypeDao requestTypeDao;
 
-
-	@Override
-	public void beforeTestClass(TestContext testContext) throws Exception {
-		super.beforeTestClass(testContext);
+    @Override
+    public void beforeTestClass(TestContext testContext) throws Exception {
+        super.beforeTestClass(testContext);
         testContext.getApplicationContext().getAutowireCapableBeanFactory().autowireBean(this);
 
-		List<App> appList = new ArrayList<>();
-		for (int j = 0; j < 4; j++) {
-			appList.add(new App("test" + j, ""));
-		}
-		appDao.saveAll(appList);
+        List<App> appList = new ArrayList<>();
+        for (int j = 0; j < 4; j++) {
+            appList.add(new App("test" + j, ""));
+        }
+        appDao.saveAll(appList);
 
-		List<MemberStatus> statusList = new ArrayList<>();
-		statusList.add(new MemberStatus(1, "Étudiant"));
-		statusList.add(new MemberStatus(2, "Enseignant"));
-		memberStatusDao.saveAll(statusList);
+        List<MemberStatus> statusList = new ArrayList<>();
+        statusList.add(new MemberStatus(1, "Étudiant"));
+        statusList.add(new MemberStatus(2, "Enseignant"));
+        memberStatusDao.saveAll(statusList);
 
-		List<Members> memberList = new ArrayList<>();
-		for (int i = 0; i <= 10; i++) {
-			memberList.add(new Members("member" + i, 1, "nom" + i, "nom" + i, ""));
-		}
-		memberList.add(new Members("teacher", 2, "Gestion", "McGestionFace", "gestion@email.com"));
-		membersDao.saveAll(memberList);
+        List<Members> memberList = new ArrayList<>();
+        for (int i = 0; i <= 10; i++) {
+            memberList.add(new Members("member" + i, 1, "nom" + i, "nom" + i, ""));
+        }
+        memberList.add(new Members("teacher", 2, "Gestion", "McGestionFace", "gestion@email.com"));
+        membersDao.saveAll(memberList);
 
-		List<Activities> activitiesList = new ArrayList<>();
-		for (int k = 0; k < appList.size(); k++) {
-			activitiesList.add(new Activities(k, appList.get(k).getIdApp(), "teacher", k + 2));
-		}
-		activitiesDao.saveAll(activitiesList);
+        List<Activities> activitiesList = new ArrayList<>();
+        for (int k = 0; k < appList.size(); k++) {
+            activitiesList.add(new Activities(k, appList.get(k).getIdApp(), "teacher", k + 2));
+        }
+        activitiesDao.saveAll(activitiesList);
 
-		List<MemberClass> memberClasses = new ArrayList<>();
-		for (Members member : memberList) {
-			for (Activities activity : activitiesList) {
+        List<MemberClass> memberClasses = new ArrayList<>();
+        for (Members member : memberList) {
+            for (Activities activity : activitiesList) {
                 if (member.getIdMemberStatus() == 1)
                     memberClasses.add(new MemberClass(member.getCip(), activity.getIdClass()));
-			}
-		}
-		memberClassDao.saveAll(memberClasses);
+            }
+        }
+        memberClassDao.saveAll(memberClasses);
 
         requestTypeDao.save(new RequestType(1, "Team"));
         requestTypeDao.save(new RequestType(2, "Friend"));
@@ -116,11 +115,11 @@ public class TestListener extends AbstractTestExecutionListener {
         groupTypeDao.save(new GroupType(3, "Tutorat", 0, 50));
 
         System.out.println("Data Initialization Done");
-	}
+    }
 
-	@Override
-	public void afterTestClass(TestContext testContext) throws Exception {
-		super.afterTestClass(testContext);
+    @Override
+    public void afterTestClass(TestContext testContext) throws Exception {
+        super.afterTestClass(testContext);
         testContext.getApplicationContext().getAutowireCapableBeanFactory().autowireBean(this);
 
         requestDao.deleteAll();
@@ -141,7 +140,6 @@ public class TestListener extends AbstractTestExecutionListener {
         membersDao.deleteAll();
         memberStatusDao.deleteAll();
 
-
         System.out.println("Data Cleanup Done");
-	}
+    }
 }

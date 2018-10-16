@@ -31,11 +31,11 @@ import com.tinderroulette.backend.rest.model.Request;
 @TestExecutionListeners({ TestListener.class, DependencyInjectionTestExecutionListener.class })
 public class MatchmakingTest extends AbstractTestExecutionListener {
 
-	@Autowired
-	private MatchMakingDao matchmakingDao;
+    @Autowired
+    private MatchMakingDao matchmakingDao;
 
-	@Autowired
-	private RequestDao requestDao;
+    @Autowired
+    private RequestDao requestDao;
 
     @Test
     public void merge2Member() {
@@ -81,7 +81,7 @@ public class MatchmakingTest extends AbstractTestExecutionListener {
         assertTrue(matchmakingDao.findAllFreeUser(1).size() == 3);
     }
 
-	@Test
+    @Test
     public void merge2Group() {
         requestDao.save(new Request(2, "member0", "member1", 1, new Date()));
         requestDao.save(new Request(2, "member0", "member2", 1, new Date()));
@@ -117,5 +117,5 @@ public class MatchmakingTest extends AbstractTestExecutionListener {
         assertTrue(matchmakingDao.mergeTeam("member0", "member4", 3));
         assertTrue(matchmakingDao.mergeTeam("member0", "member5", 3));
         assertFalse(matchmakingDao.mergeTeam("member0", "member6", 3));
-	}
+    }
 }
