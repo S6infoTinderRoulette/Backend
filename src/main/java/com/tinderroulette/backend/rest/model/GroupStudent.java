@@ -38,4 +38,16 @@ public class GroupStudent {
     public void setIdGroup(int idGroup) {
         this.idGroup = idGroup;
     }
+
+    @Override
+    public boolean equals(Object comparedObject) {
+        if (comparedObject == this) {
+            return true;
+        }
+        if (!(comparedObject instanceof GroupStudent)) {
+            return false;
+        }
+        GroupStudent groupStudent = (GroupStudent) comparedObject;
+        return groupStudent.cip.equalsIgnoreCase(cip) && groupStudent.idGroup == idGroup;
+    }
 }
