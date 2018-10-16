@@ -42,14 +42,14 @@ public class MemberClass {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (o == this) {
+    public boolean equals(Object comparedObject) {
+        if (comparedObject == this) {
             return true;
         }
-        if (!(o instanceof MemberClass)) {
+        if (!(comparedObject instanceof MemberClass)) {
             return false;
         }
-        MemberClass m = (MemberClass) o;
-        return m.cip.equalsIgnoreCase(cip) && m.idClass.equalsIgnoreCase(idClass);
+        MemberClass memberClass = (MemberClass) comparedObject;
+        return memberClass.cip.equalsIgnoreCase(cip) && memberClass.idClass.equalsIgnoreCase(idClass);
     }
 }

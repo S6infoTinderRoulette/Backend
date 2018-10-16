@@ -68,15 +68,15 @@ public class Members {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (o == this) {
+    public boolean equals(Object comparedObject) {
+        if (comparedObject == this) {
             return true;
         }
-        if (!(o instanceof Members)) {
+        if (!(comparedObject instanceof Members)) {
             return false;
         }
-        Members m = (Members) o;
-        return m.cip.equalsIgnoreCase(cip) && m.firstName.equalsIgnoreCase(firstName) && m.lastName.equalsIgnoreCase(lastName)
-                && m.idMemberStatus == idMemberStatus && m.email.equalsIgnoreCase(email);
+        Members member = (Members) comparedObject;
+        return member.cip.equalsIgnoreCase(cip) && member.firstName.equalsIgnoreCase(firstName) && member.lastName.equalsIgnoreCase(lastName)
+                && member.idMemberStatus == idMemberStatus && member.email.equalsIgnoreCase(email);
     }
 }

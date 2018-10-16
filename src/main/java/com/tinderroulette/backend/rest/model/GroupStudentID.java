@@ -31,14 +31,14 @@ public class GroupStudentID implements Serializable {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (o == this) {
+    public boolean equals(Object comparedObject) {
+        if (comparedObject == this) {
             return true;
         }
-        if (!(o instanceof GroupStudentID)) {
+        if (!(comparedObject instanceof GroupStudentID)) {
             return false;
         }
-        GroupStudentID m = (GroupStudentID) o;
-        return m.cip.equalsIgnoreCase(cip) && m.idGroup == idGroup;
+        GroupStudentID groupStudentId = (GroupStudentID) comparedObject;
+        return groupStudentId.cip.equalsIgnoreCase(cip) && groupStudentId.idGroup == idGroup;
     }
 }

@@ -40,14 +40,14 @@ public class GroupStudent {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (o == this) {
+    public boolean equals(Object comparedObject) {
+        if (comparedObject == this) {
             return true;
         }
-        if (!(o instanceof GroupStudent)) {
+        if (!(comparedObject instanceof GroupStudent)) {
             return false;
         }
-        GroupStudent m = (GroupStudent) o;
-        return m.cip.equalsIgnoreCase(cip) && m.idGroup == idGroup;
+        GroupStudent groupStudent = (GroupStudent) comparedObject;
+        return groupStudent.cip.equalsIgnoreCase(cip) && groupStudent.idGroup == idGroup;
     }
 }

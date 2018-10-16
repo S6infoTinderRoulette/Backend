@@ -32,14 +32,14 @@ public class MemberClassId implements Serializable {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (o == this) {
+    public boolean equals(Object comparedObject) {
+        if (comparedObject == this) {
             return true;
         }
-        if (!(o instanceof MemberClassId)) {
+        if (!(comparedObject instanceof MemberClassId)) {
             return false;
         }
-        MemberClassId m = (MemberClassId) o;
-        return m.cip.equalsIgnoreCase(cip) && m.idClass.equalsIgnoreCase(idClass);
+        MemberClassId memberClassId = (MemberClassId) comparedObject;
+        return memberClassId.cip.equalsIgnoreCase(cip) && memberClassId.idClass.equalsIgnoreCase(idClass);
     }
 }
