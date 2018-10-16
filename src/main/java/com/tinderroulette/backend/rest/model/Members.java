@@ -66,4 +66,17 @@ public class Members {
     public void setEmail(String email) {
         this.email = email;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == this) {
+            return true;
+        }
+        if (!(o instanceof Members)) {
+            return false;
+        }
+        Members m = (Members) o;
+        return m.cip.equalsIgnoreCase(cip) && m.firstName.equalsIgnoreCase(firstName) && m.lastName.equalsIgnoreCase(lastName)
+                && m.idMemberStatus == idMemberStatus && m.email.equalsIgnoreCase(email);
+    }
 }

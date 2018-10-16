@@ -30,4 +30,16 @@ public class MemberClassId implements Serializable {
     public void setIdClass(String idClass) {
         this.idClass = idClass;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == this) {
+            return true;
+        }
+        if (!(o instanceof MemberClassId)) {
+            return false;
+        }
+        MemberClassId m = (MemberClassId) o;
+        return m.cip.equalsIgnoreCase(cip) && m.idClass.equalsIgnoreCase(idClass);
+    }
 }

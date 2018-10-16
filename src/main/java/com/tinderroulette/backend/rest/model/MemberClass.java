@@ -40,4 +40,16 @@ public class MemberClass {
     public void setIdClass(String idClass) {
         this.idClass = idClass;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == this) {
+            return true;
+        }
+        if (!(o instanceof MemberClass)) {
+            return false;
+        }
+        MemberClass m = (MemberClass) o;
+        return m.cip.equalsIgnoreCase(cip) && m.idClass.equalsIgnoreCase(idClass);
+    }
 }
