@@ -27,8 +27,8 @@ public class Request {
     @Id
     private int idRequestType;
 
-	@Nullable
-	@Column(insertable = false)
+    @Nullable
+    @Column(insertable = false)
     private Date requestTimestamp;
 
     public Request() {
@@ -39,7 +39,7 @@ public class Request {
         this.cipSeeking = cipSeeking;
         this.cipRequested = cipRequested;
         this.idRequestType = idRequestType;
-		this.requestTimestamp = requestTimestamp;
+        this.requestTimestamp = requestTimestamp;
     }
 
     public int getIdActivity() {
@@ -79,8 +79,7 @@ public class Request {
     }
 
     public void setRequestTimestamp(Date requestTimestamp) {
-		this.requestTimestamp = requestTimestamp;
+        this.requestTimestamp = requestTimestamp;
     }
-
 
 }
