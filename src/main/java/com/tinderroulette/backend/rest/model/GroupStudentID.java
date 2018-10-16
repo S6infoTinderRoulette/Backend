@@ -29,4 +29,16 @@ public class GroupStudentID implements Serializable {
     public void setIdGroup(int idGroup) {
         this.idGroup = idGroup;
     }
+
+    @Override
+    public boolean equals(Object comparedObject) {
+        if (comparedObject == this) {
+            return true;
+        }
+        if (!(comparedObject instanceof GroupStudentID)) {
+            return false;
+        }
+        GroupStudentID groupStudentId = (GroupStudentID) comparedObject;
+        return groupStudentId.cip.equalsIgnoreCase(cip) && groupStudentId.idGroup == idGroup;
+    }
 }

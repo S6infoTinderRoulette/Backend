@@ -1,12 +1,14 @@
 package com.tinderroulette.backend.rest.model;
 
+import java.util.Date;
+
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.IdClass;
 import javax.persistence.Table;
-import javax.validation.constraints.NotNull;
-import java.io.Serializable;
-import java.util.Date;
+
+import org.springframework.lang.Nullable;
 
 @Entity
 @Table(name = "request")
@@ -25,7 +27,8 @@ public class Request {
     @Id
     private int idRequestType;
 
-    @NotNull
+    @Nullable
+    @Column(insertable = false)
     private Date requestTimestamp;
 
     public Request() {
@@ -78,6 +81,5 @@ public class Request {
     public void setRequestTimestamp(Date requestTimestamp) {
         this.requestTimestamp = requestTimestamp;
     }
-
 
 }

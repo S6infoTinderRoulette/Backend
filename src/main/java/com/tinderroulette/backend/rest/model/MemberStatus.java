@@ -17,9 +17,9 @@ public class MemberStatus {
     public MemberStatus() {
     }
 
-    public MemberStatus(int idMemberStatus, String status1) {
+    public MemberStatus(int idMemberStatus, String status) {
         this.idMemberStatus = idMemberStatus;
-        status = status1;
+        this.status = status;
     }
 
     public int getIdMemberStatus() {
@@ -34,7 +34,7 @@ public class MemberStatus {
         return status;
     }
 
-    public void setStatus(String status1) {
-        status = status1;
+    public void setStatus(String status) {
+        this.status = status;
     }
 }
