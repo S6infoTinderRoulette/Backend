@@ -59,7 +59,7 @@ public class GroupType {
     }
 
     public Integer getMinDefault() {
-        return minDefault;
+        return minDefault != null ? minDefault : 1;
     }
 
     public void setMinDefault(Integer minDefault) {
@@ -67,7 +67,7 @@ public class GroupType {
     }
 
     public Integer getMaxDefault() {
-        return maxDefault;
+        return maxDefault != null ? maxDefault : Integer.MAX_VALUE;
     }
 
     public void setMaxDefault(Integer maxDefault) {
