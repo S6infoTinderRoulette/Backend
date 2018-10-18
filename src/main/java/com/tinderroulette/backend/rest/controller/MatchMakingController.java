@@ -1,44 +1,29 @@
-package com.tinderroulette.backend.rest.controller;
+/*package com.tinderroulette.backend.rest.controller;
 
-import java.util.List;
 
-import org.json.JSONObject;
-import org.springframework.http.HttpEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
+import com.tinderroulette.backend.rest.model.MatchMaking;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.tinderroulette.backend.rest.CAS.ConfigurationController;
-import com.tinderroulette.backend.rest.dao.MatchMakingDao;
-import com.tinderroulette.backend.rest.model.GroupStudent;
-import com.tinderroulette.backend.rest.model.MemberClass;
+import java.util.concurrent.atomic.AtomicLong;
+
+import static org.springframework.web.bind.annotation.RequestMethod.GET;
 
 @RestController
 public class MatchMakingController {
-    private MatchMakingDao matchmakingDao;
 
-    public MatchMakingController(MatchMakingDao matchmakingDao) {
-        this.matchmakingDao = matchmakingDao;
-    }
+    private static final String templateName = "nom = %s!";
+    private static final String templateCIP = "cip = %s!";
+    private static AtomicLong counter = new AtomicLong();
 
-    @GetMapping(value = "/matchmaking/members/{idActivity}/")
-    public List<MemberClass> findFreeMembers(@PathVariable int idActivity) {
-        return matchmakingDao.findAllFreeUser(idActivity);
-    }
-
-    @GetMapping(value = "/matchmaking/groups/{idActivity}/{getOpen}/")
-    public List<GroupStudent> findFreeGroup(@PathVariable int idActivity, @PathVariable boolean getOpen) {
-        return getOpen ? matchmakingDao.findAllIncompleteGroups(idActivity)
-                : matchmakingDao.findAllFullGroups(idActivity);
-    }
-
+    @RequestMapping(path = "/rest/v1/matchmaking", method = GET)
     @ResponseBody
-    @PostMapping(value = "/matchmaking/{idActivity}/")
-    public boolean mergeTeam(HttpEntity<String> httpEntity, @PathVariable int idActivity) {
-        JSONObject json = new JSONObject(httpEntity.getBody());
-        String currUser = ConfigurationController.getAuthUser();
-        return matchmakingDao.mergeTeam(json.getString("cip"), currUser, idActivity);
+    public MatchMaking matchmaking(@RequestParam(value="name", defaultValue="Test") String name,
+                                   @RequestParam(value="cip", defaultValue="Ok") String cip) {
+        return new MatchMaking(counter.incrementAndGet(),
+                String.format(templateName, name), String.format(templateCIP, cip));
     }
 }
+*/

@@ -13,5 +13,6 @@ public interface MemberClassDao extends JpaRepository<MemberClass,String> {
     void deleteByCipAndIdClass (String cip, String idClass);
     MemberClass findByCipAndAndIdClass (String cip, String idClass);
     List<MemberClass> findAll ();
+    List<MemberClass> findByIdClass (String idClass);
 
 }
