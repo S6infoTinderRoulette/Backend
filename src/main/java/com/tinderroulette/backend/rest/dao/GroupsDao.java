@@ -1,16 +1,20 @@
 package com.tinderroulette.backend.rest.dao;
 
-import com.tinderroulette.backend.rest.model.Groups;
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
+import com.tinderroulette.backend.rest.model.Groups;
 
 @Repository
-public interface GroupsDao extends JpaRepository <Groups,String> {
+public interface GroupsDao extends JpaRepository<Groups, Integer> {
 
-    Groups save (Groups groups);
+    Groups save(Groups groups);
+
     List<Groups> findAll();
-    Groups findByIdGroupType ( int idGroupType );
-    void deleteByIdGroupType ( int idGroupType );
+
+    Groups findByIdGroupType(int idGroupType);
+
+    void deleteByIdGroupType(int idGroupType);
 }

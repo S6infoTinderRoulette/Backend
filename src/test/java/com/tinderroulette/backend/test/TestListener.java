@@ -89,12 +89,12 @@ public class TestListener extends AbstractTestExecutionListener {
         for (int i = 0; i <= 10; i++) {
             memberList.add(new Members("member" + i, 1, "nom" + i, "nom" + i, ""));
         }
-        memberList.add(new Members("teacher", 2, "Gestion", "McGestionFace", "gestion@email.com"));
+        memberList.add(new Members("teacher", 2, "Gestion", "Test", "gestion@email.com"));
         membersDao.saveAll(memberList);
 
         List<Activities> activitiesList = new ArrayList<>();
         for (int k = 0; k < appList.size(); k++) {
-            activitiesList.add(new Activities(k, appList.get(k).getIdApp(), "teacher", k + 2));
+            activitiesList.add(new Activities(k, appList.get(k).getIdApp(), "teacher", k + 2, false));
         }
         activitiesDao.saveAll(activitiesList);
 
@@ -111,8 +111,9 @@ public class TestListener extends AbstractTestExecutionListener {
         requestTypeDao.save(new RequestType(2, "Friend"));
 
         groupTypeDao.save(new GroupType(1, "Groupe Activité", 0, 50));
-        groupTypeDao.save(new GroupType(2, "Procédural", 0, 50));
+        groupTypeDao.save(new GroupType(2, "Procédural", 0, 4));
         groupTypeDao.save(new GroupType(3, "Tutorat", 0, 50));
+        groupTypeDao.save(new GroupType(4, "Autre", 0, 50));
 
         System.out.println("Data Initialization Done");
     }
