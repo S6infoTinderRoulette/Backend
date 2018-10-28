@@ -1,15 +1,25 @@
 package com.tinderroulette.backend.rest.controller;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
+import javax.validation.Valid;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.tinderroulette.backend.rest.CAS.ConfigurationController;
 import com.tinderroulette.backend.rest.dao.RequestDao;
 import com.tinderroulette.backend.rest.exceptions.EmptyJsonResponse;
 import com.tinderroulette.backend.rest.exceptions.RequestIntrouvableException;
 import com.tinderroulette.backend.rest.model.Request;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
-import javax.validation.Valid;
-import java.util.List;
 
 @RestController
 public class RequestController {
@@ -23,6 +33,20 @@ public class RequestController {
     @GetMapping(value = "/request/")
     public List<Request> findAll () {
         return requestDao.findAll();
+    }
+
+    @GetMapping(value = "/request/requested/")
+    public List<Request> findAllRequested() {
+        String currUser = ConfigurationController.getAuthUser();
+        return requestDao.findAll().stream().filter(o -> o.getCipRequested().equals(currUser))
+                .collect(Collectors.toList());
+    }
+
+    @GetMapping(value = "/request/seeking/")
+    public List<Request> findAllSeeking() {
+        String currUser = ConfigurationController.getAuthUser();
+        return requestDao.findAll().stream().filter(o -> o.getCipSeeking().equals(currUser))
+                .collect(Collectors.toList());
     }
 
     @PostMapping(value = "/request/")
