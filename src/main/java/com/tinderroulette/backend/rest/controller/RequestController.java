@@ -1,5 +1,6 @@
 package com.tinderroulette.backend.rest.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -47,6 +48,21 @@ public class RequestController {
         String currUser = ConfigurationController.getAuthUser();
         return requestDao.findAll().stream().filter(o -> o.getCipSeeking().equals(currUser))
                 .collect(Collectors.toList());
+    }
+
+    @GetMapping(value = "/request/duplicate")
+    public List<Request> findAllDuplicate() {
+        List<Request> requestedList = findAllRequested();
+        List<Request> seekingList = findAllSeeking();
+        List<Request> duplicateList = new ArrayList<Request>();
+        for (Request requested : requestedList) {
+            for (Request seeking : seekingList) {
+                if (requested.getCipSeeking().equals(seeking.getCipRequested())) {
+                    duplicateList.add(requested);
+                }
+            }
+        }
+        return duplicateList;
     }
 
     @PostMapping(value = "/request/")
