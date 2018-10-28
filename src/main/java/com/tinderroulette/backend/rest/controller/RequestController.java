@@ -50,7 +50,7 @@ public class RequestController {
                 .collect(Collectors.toList());
     }
 
-    @GetMapping(value = "/request/duplicate")
+    @GetMapping(value = "/request/duplicate/")
     public List<Request> findAllDuplicate() {
         List<Request> requestedList = findAllRequested();
         List<Request> seekingList = findAllSeeking();
