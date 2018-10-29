@@ -50,7 +50,7 @@ public class GroupsController {
     public ResponseEntity<Void> updateGroups (@Valid @RequestBody Groups groups) {
         Groups groupsTest = groupsDao.findByIdGroupType(groups.getIdGroupType());
         if (groupsTest == null) {
-            throw new GroupsIntrouvableException("Le MemberStatus correspondant n'est pas présent dans la base de données");
+            throw new GroupsIntrouvableException("Le Groups correspondant n'est pas présent dans la base de données");
         } else {
             Groups Groupsput = groupsDao.save(groups);
             if (Groupsput == null) {

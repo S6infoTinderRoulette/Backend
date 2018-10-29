@@ -53,7 +53,7 @@ public class ParametercacheController {
     public ResponseEntity<Void> updateParametercache (@Valid @RequestBody Parametercache parametercache) {
         Parametercache parametercacheTest = parametercacheDao.findByCipAndIdClassAndIdGroupType(parametercache.getCip(), parametercache.getIdClass(),parametercache.getIdGroupType());
         if (parametercacheTest == null) {
-            throw new ParametercacheIntrouvableException("Le MemberStatus correspondant n'est pas présent dans la base de données");
+            throw new ParametercacheIntrouvableException("Le Parametercache correspondant n'est pas présent dans la base de données");
         } else {
             Parametercache Parametercacheput = parametercacheDao.save(parametercache);
             if (Parametercacheput == null) {

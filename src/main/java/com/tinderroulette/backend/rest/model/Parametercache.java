@@ -1,12 +1,22 @@
 package com.tinderroulette.backend.rest.model;
 
 import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.IdClass;
+import javax.persistence.Table;
 
 @Entity
+@Table (name = "parametercache")
+@IdClass(ParametercacheId.class)
 public class Parametercache {
+
+    @Id
     private String cip;
+    @Id
     private String idClass;
+    @Id
     private int idGroupType;
+
     private String groupsize;
     private int nbgroup;
 
