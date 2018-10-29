@@ -7,13 +7,11 @@ import java.util.List;
 import java.util.stream.IntStream;
 
 import org.json.JSONArray;
+import org.json.JSONObject;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.tinderroulette.backend.rest.dao.ClassesDao;
 import com.tinderroulette.backend.rest.dao.GroupStudentDao;
@@ -25,6 +23,7 @@ import com.tinderroulette.backend.rest.model.GroupStudent;
 import com.tinderroulette.backend.rest.model.GroupType;
 import com.tinderroulette.backend.rest.model.Groups;
 import com.tinderroulette.backend.rest.model.MemberClass;
+
 
 @RestController
 public class PartitionneurController {
@@ -44,13 +43,48 @@ public class PartitionneurController {
         this.memberClassDao = memberClassDao;
     }
 
-    @GetMapping(value = "/createGroup/{idClass}/")
-    public List<MemberClass> createGroupNoParam(@PathVariable String idClass) {
-        List<MemberClass> memberActivity = memberClassDao.findByIdClass(idClass);
+    @PostMapping (value = "/createGroup/")
+    public List<List<MemberClass>> createGroup (HttpEntity<String> httpEntity) throws Exception {
+        JSONObject params = new JSONObject(httpEntity.getBody());
+        List<List<MemberClass>> finalList = new ArrayList<>();
+        if (params.has("idClass")) {
+            finalList = createGroupNoParam(params.getString("idClass"));
+            if (params.has("nbMember")) {
+                finalList = createGroupNbPerson(params.getString("idClass"),params.getInt("nbMember"));
+            } else if (params.has("idGroupType")){
+                if (params.has("sizes")) {
+                    String sizes = params.getString("sizes");
+                    String[] integerStrings = sizes.split(",");
+                    int[] sizesInt = new int[integerStrings.length];
+                    for (int i = 0; i < sizesInt.length; i++){
+                        sizesInt[i] = Integer.parseInt(integerStrings[i]);
+                    }
+                    finalList = createGroupGroupTypeAndArray(params.getString("idClass"),params.getInt("idGroupType"),sizesInt);
+                } else {
+                    finalList = createGroupGroupType(params.getString("idClass"),params.getInt("idGroupType"));
+                }
+            } else if (params.has("sizes") && !params.has("idGroupType")) {
+                String sizes = params.getString("sizes");
+                String[] integerStrings = sizes.split(",");
+                int[] sizesInt = new int[integerStrings.length];
+                for (int i = 0; i < sizesInt.length; i++){
+                    sizesInt[i] = Integer.parseInt(integerStrings[i]);
+                }
+                finalList = createGroupArraySizes(params.getString("idClass"),sizesInt);
+            }
+        } else {
+            throw new Exception("Paramètres de post incohérents");
+        }
+        return finalList;
+    }
+
+    public List<List<MemberClass>> createGroupNoParam(@PathVariable String idClass) {
+        List<List<MemberClass>> memberActivity = new ArrayList<>();
+        List<MemberClass> member = memberClassDao.findByIdClass(idClass);
+        memberActivity.add(member);
         return memberActivity;
     }
 
-    @GetMapping(value = "/createGroupPerNb/{idClass}/{nbMember}/")
     public List<List<MemberClass>> createGroupNbPerson(@PathVariable String idClass, @PathVariable int nbMember) {
         List<MemberClass> memberActivity = memberClassDao.findByIdClass(idClass);
         Collections.shuffle(memberActivity);
@@ -70,7 +104,6 @@ public class PartitionneurController {
         return groups;
     }
 
-    @GetMapping(value = "/createGroupPerType/{idClass}/{idGroupType}/")
     public List<List<MemberClass>> createGroupGroupType(@PathVariable String idClass, @PathVariable int idGroupType) {
         GroupType groupType = groupTypeDao.findByIdGroupType(idGroupType);
         List<MemberClass> studentActivity = memberClassDao.findByIdClass(idClass);
@@ -118,11 +151,11 @@ public class PartitionneurController {
                 }
             }
             groups.add(tempoList);
+            index++;
         }
         return groups;
     }
 
-    @GetMapping(value = "/createGroupMultipleSize/{idClass}/{sizes}/")
     public List<List<MemberClass>> createGroupArraySizes(@PathVariable String idClass, @PathVariable int[] sizes)
             throws Exception {
         List<MemberClass> studentActivity = memberClassDao.findByIdClass(idClass);
@@ -149,54 +182,67 @@ public class PartitionneurController {
         }
     }
 
-    @GetMapping(value = "/createGroupMultipleSizeType/{idClass}/{idGroupType}/{sizes}/")
     public List<List<MemberClass>> createGroupGroupTypeAndArray(@PathVariable String idClass,
             @PathVariable int idGroupType, @PathVariable int[] sizes) {
         GroupType groupType = groupTypeDao.findByIdGroupType(idGroupType);
         List<MemberClass> studentActivity = memberClassDao.findByIdClass(idClass);
         Collections.shuffle(studentActivity);
         List<List<MemberClass>> groups = new ArrayList<>();
-        Iterator<MemberClass> iteratorSizes = studentActivity.iterator();
+        Iterator<MemberClass> iterator = studentActivity.iterator();
 
-        while (iteratorSizes.hasNext()) {
-            for (int i = 0; i < sizes.length; i++) {
-                List<MemberClass> tempoList = new ArrayList<>();
-                for (int j = 0; j < sizes[i]; j++) {
-                    if (iteratorSizes.hasNext()) {
-                        tempoList.add(iteratorSizes.next());
-                    } else {
-                        break;
-                    }
-                }
-                groups.add(tempoList);
-            }
-        }
-
-        int smallestRemainder = Integer.MAX_VALUE;
-        int optimalValue = 0;
-        if (studentActivity.size() / groupType.getMinDefault() == 0) {
-            optimalValue = studentActivity.size() - IntStream.of(sizes).sum();
-        } else {
-            for (int i = 0; i <= (groupType.getMaxDefault() - groupType.getMinDefault()); i++) {
-                int currentRemainder = (studentActivity.size() % (groupType.getMinDefault() + i));
-                if (currentRemainder < smallestRemainder
-                        || (currentRemainder == smallestRemainder && (groupType.getMinDefault() + i) > optimalValue)) {
-                    smallestRemainder = currentRemainder;
-                    optimalValue = groupType.getMinDefault() + i;
-                }
-            }
-        }
-
-        while (iteratorSizes.hasNext()) {
+        for (int i = 0; i < sizes.length; i++) {
             List<MemberClass> tempoList = new ArrayList<>();
-            for (int j = 0; j < optimalValue; j++) {
-                if (iteratorSizes.hasNext()) {
-                    tempoList.add(iteratorSizes.next());
+            for (int j = 0; j < sizes[i]; j++) {
+                if (iterator.hasNext()) {
+                    tempoList.add(iterator.next());
                 } else {
                     break;
                 }
             }
             groups.add(tempoList);
+        }
+        
+        int smallestRemainder = Integer.MAX_VALUE;
+        int totalStudent = studentActivity.size() - IntStream.of(sizes).sum();
+        List<Integer> optimalValues = new ArrayList();
+        for (int i = 0; i <= (groupType.getMaxDefault() - groupType.getMinDefault()); i++) {
+            int currentGroupSize = groupType.getMinDefault() + i;
+            int currentRemainder = totalStudent % currentGroupSize;
+            int currentNumberGroup = totalStudent / currentGroupSize;
+            if (currentRemainder <= (groupType.getMaxDefault() - currentGroupSize) * currentNumberGroup
+                    || totalStudent <= currentGroupSize) {
+                currentRemainder = 0;
+            }
+            if (smallestRemainder >= (currentGroupSize + currentRemainder)) {
+                smallestRemainder = currentGroupSize + currentRemainder;
+                optimalValues = new ArrayList();
+                for (int j = 0; j < currentGroupSize; j++) {
+                    optimalValues.add(groupType.getMinDefault() + i);
+                }
+                if (currentRemainder == 0) {
+                    int diff = groupType.getMaxDefault() - currentGroupSize;
+                    for (int j = 0; j < totalStudent % currentGroupSize; j++) {
+                        optimalValues.set(j % diff, optimalValues.get(j % diff) + 1);
+                    }
+                }
+                else {
+                    optimalValues.add(currentRemainder);
+                }
+            }
+        }
+
+        int index = 0;
+        while (iterator.hasNext()) {
+            List<MemberClass> tempoList = new ArrayList<>();
+            for (int j = 0; j < optimalValues.get(index); j++) {
+                if (iterator.hasNext()) {
+                    tempoList.add(iterator.next());
+                } else {
+                    break;
+                }
+            }
+            groups.add(tempoList);
+            index++;
         }
         return groups;
     }
