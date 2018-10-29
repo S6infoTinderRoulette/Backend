@@ -1,20 +1,25 @@
 package com.tinderroulette.backend.rest.model;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.IdClass;
-import javax.persistence.Table;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.tinderroulette.backend.rest.DBConnection.MemberClassDeserializer;
+
+import javax.persistence.*;
 import java.io.Serializable;
 
 @Entity
 @Table(name = "memberclass")
 @IdClass(MemberClassId.class)
+@JsonIgnoreProperties({"departement","cote_r","inscription", "programme", "unit_id","nom","prenom","trimestre_id","app"})
+@JsonDeserialize(using = MemberClassDeserializer.class)
 public class MemberClass {
 
     @Id
+    @Column(name = "cip", columnDefinition="VARCHAR(8)")
     private String cip;
 
     @Id
+    @Column(name = "id_class")
     private String idClass;
 
     public MemberClass() {

@@ -1,21 +1,22 @@
 package com.tinderroulette.backend.rest.model;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
-import com.fasterxml.jackson.annotation.JsonAlias;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import javax.persistence.*;
+import com.fasterxml.jackson.annotation.*;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.tinderroulette.backend.rest.DBConnection.AppDeserializer;
 
 @Entity
 @Table(name = "app")
-@JsonPropertyOrder({"ap_id", "app"})
-@JsonIgnoreProperties({"departement_id","groupe_id","inscription", "profil_id", "trimestre_id", "unite_id"})
+@JsonIgnoreProperties({"departement_id","groupe_id","inscription", "unite_id", "ap_id"})
+@JsonDeserialize(using = AppDeserializer.class)
+
 public class App {
 
     @Id
-    @JsonAlias({ "ap_id", "idApp" }) private String idApp;
-    @JsonAlias({ "app", "description" })private String description;
+    @Column(name = "id_app")
+    private String idApp;
+
+    private String description;
 
     public App(String idApp, String description) {
         this.idApp = idApp;

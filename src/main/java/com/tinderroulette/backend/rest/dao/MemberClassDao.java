@@ -10,6 +10,7 @@ import java.util.List;
 public interface MemberClassDao extends JpaRepository<MemberClass,String> {
 
     MemberClass save (MemberClass memberClass);
+    MemberClass save (List<MemberClass> memberClasses);
     void deleteByCipAndIdClass (String cip, String idClass);
     MemberClass findByCipAndAndIdClass (String cip, String idClass);
     List<MemberClass> findAll ();

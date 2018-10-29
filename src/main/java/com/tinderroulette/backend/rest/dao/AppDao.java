@@ -10,6 +10,7 @@ import java.util.List;
 public interface AppDao extends JpaRepository <App,String> {
 
     App save (App app);
+    App save (List<App> apps);
     List<App> findAll();
     App findByIdApp (String IdApp);
     void deleteByIdApp (String IdApp);

@@ -1,26 +1,32 @@
 package com.tinderroulette.backend.rest.model;
 
+import com.tinderroulette.backend.rest.DBConnection.MembersDeserializer;
 
-import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import javax.persistence.*;
 
 @Entity
 @Table(name = "members")
-@JsonPropertyOrder({"cip_etudiant", "courriel", "nom", "prenom"})
-@JsonIgnoreProperties({"app","cote_r","departement","inscription", "profil_id", "programme","trimestre_id", "unit_id","idMemberStatus"})
+@JsonIgnoreProperties({"app","cote_r","departement","inscription", "profil_id", "programme","trimestre_id", "unit_id"})
+@JsonDeserialize(using = MembersDeserializer.class)
 public class Members {
 
     @Id
-    @JsonAlias({ "cip_etudiant", "cip" }) private String cip;
+    @Column(name = "cip", columnDefinition="VARCHAR(8)")
+    private String cip;
+
+    @Column(name = "id_member_status")
     private int idMemberStatus;
-    @JsonAlias({ "nom", "lastName" }) private String lastName;
-    @JsonAlias({ "prenom", "firstName" }) private String firstName;
-    @JsonAlias({ "courriel", "email" }) private String email;
+
+    @Column(name = "last_name")
+    private String lastName;
+
+    @Column(name = "first_name")
+    private String firstName;
+
+    @Column(name = "email")
+    private String email;
 
     public Members() {
     }
