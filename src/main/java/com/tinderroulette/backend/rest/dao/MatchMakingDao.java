@@ -38,6 +38,14 @@ public class MatchMakingDao {
         return (List<GroupStudent>) query.getResultList();
     }
 
+    public boolean leaveTeam(String cip, int idActivity) {
+        String sql = "SELECT * FROM tinderroulette.leave_group(?,?)";
+        Query query = em.createNativeQuery(sql)
+                .setParameter(1, cip)
+                .setParameter(2, idActivity);
+        return (boolean) query.getSingleResult();
+    }
+
     public boolean mergeTeam(String seekingCip, String requestedCip, int idActivity) {
         String sql = "SELECT * FROM tinderroulette.merge_teams(?,?,?)";
         Query query = em.createNativeQuery(sql)
