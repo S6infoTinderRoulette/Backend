@@ -79,19 +79,38 @@ public class PartitionneurController {
         Iterator<MemberClass> iterator = studentActivity.iterator();
 
         int smallestRemainder = Integer.MAX_VALUE;
-        int optimalValue = 0;
+        int totalStudent = studentActivity.size();
+        List<Integer> optimalValues = new ArrayList();
         for (int i = 0; i <= (groupType.getMaxDefault() - groupType.getMinDefault()); i++) {
-            int currentRemainder = (studentActivity.size() % (groupType.getMinDefault() + i));
-            if (currentRemainder < smallestRemainder
-                    || (currentRemainder == smallestRemainder && (groupType.getMinDefault() + i) > optimalValue)) {
-                smallestRemainder = currentRemainder;
-                optimalValue = groupType.getMinDefault() + i;
+            int currentGroupSize = groupType.getMinDefault() + i;
+            int currentRemainder = totalStudent % currentGroupSize;
+            int currentNumberGroup = totalStudent / currentGroupSize;
+            if (currentRemainder <= (groupType.getMaxDefault() - currentGroupSize) * currentNumberGroup
+                    || totalStudent <= currentGroupSize) {
+                currentRemainder = 0;
+            }
+            if (smallestRemainder >= (currentGroupSize + currentRemainder)) {
+                smallestRemainder = currentGroupSize + currentRemainder;
+                optimalValues = new ArrayList();
+                for (int j = 0; j < currentGroupSize; j++) {
+                    optimalValues.add(groupType.getMinDefault() + i);
+                }
+                if (currentRemainder == 0) {
+                    int diff = groupType.getMaxDefault() - currentGroupSize;
+                    for (int j = 0; j < totalStudent % currentGroupSize; j++) {
+                        optimalValues.set(j % diff, optimalValues.get(j % diff) + 1);
+                    }
+                } 
+                else {
+                    optimalValues.add(currentRemainder);
+                }
             }
         }
 
+        int index = 0;
         while (iterator.hasNext()) {
             List<MemberClass> tempoList = new ArrayList<>();
-            for (int j = 0; j < optimalValue; j++) {
+            for (int j = 0; j < optimalValues.get(index); j++) {
                 if (iterator.hasNext()) {
                     tempoList.add(iterator.next());
                 } else {
