@@ -25,6 +25,11 @@ public class MemberClassController {
         return memberClassDao.findByCipAndAndIdClass(cip, idClass);
     }
 
+    @GetMapping(value = "/memberclass/{idClass}/")
+    public int findNumberOfStudentByClass (@PathVariable String idClass) {
+        return memberClassDao.findByIdClass(idClass).size();
+    }
+
     @GetMapping (value = "/memberclass/")
     public List<MemberClass> findAll () {
         return memberClassDao.findAll();
