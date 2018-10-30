@@ -100,11 +100,11 @@
 	            <artifactId>maven-surefire-plugin</artifactId>
 	            <configuration>
 	                <!-- CircleCI build workaround -->
-	                <argLine>${surefireArgLine} -Xms1024m -Xmx2048m</argLine>
+	                <argLine>-Xms1024m -Xmx2048m</argLine>
 	                <reuseForks>true</reuseForks>
 	                <useSystemClassLoader>false</useSystemClassLoader>
 	            </configuration>
-	            <version>2.20.1</version><!--$NO-MVN-MAN-VER$-->
+	            <version>2.18.1</version><!--$NO-MVN-MAN-VER$-->
 	        </plugin>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
