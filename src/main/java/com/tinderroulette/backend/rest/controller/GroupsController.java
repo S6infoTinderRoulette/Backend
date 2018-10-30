@@ -21,8 +21,8 @@ public class GroupsController {
     }
 
     @GetMapping(value = "/groups/{idGroupType}")
-    public Groups findByIdGroupType (@PathVariable int idGroupType) {
-        return groupsDao.findByIdGroupType(idGroupType);
+    public Groups findByIdGroupType (@PathVariable int idGroup) {
+        return groupsDao.findByIdGroup(idGroup);
     }
 
     @GetMapping(value = "/groups/")
@@ -32,7 +32,7 @@ public class GroupsController {
 
     @PostMapping(value = "/groups/")
     public ResponseEntity<Void> addGroups (@Valid @RequestBody Groups groups) {
-        Groups groupsTest = groupsDao.findByIdGroupType(groups.getIdGroupType());
+        Groups groupsTest = groupsDao.findByIdGroup(groups.getIdGroup());
         if (groupsTest != null) {
             throw new GroupsIntrouvableException("Le Groups correspondant est déjà présent dans la base de données");
         } else {
@@ -48,7 +48,7 @@ public class GroupsController {
 
     @PutMapping(value = "/groups/")
     public ResponseEntity<Void> updateGroups (@Valid @RequestBody Groups groups) {
-        Groups groupsTest = groupsDao.findByIdGroupType(groups.getIdGroupType());
+        Groups groupsTest = groupsDao.findByIdGroup(groups.getIdGroup());
         if (groupsTest == null) {
             throw new GroupsIntrouvableException("Le Groups correspondant n'est pas présent dans la base de données");
         } else {
@@ -63,12 +63,12 @@ public class GroupsController {
     }
 
     @DeleteMapping(value = "/groups/{idGroupType}/")
-    public ResponseEntity<Void> deleteGroups (@PathVariable int idGroupType) {
-        Groups groupsTest = groupsDao.findByIdGroupType(idGroupType);
+    public ResponseEntity<Void> deleteGroups (@PathVariable int idGroup) {
+        Groups groupsTest = groupsDao.findByIdGroup(idGroup);
         if (groupsTest == null) {
             throw new GroupsIntrouvableException("Le Groups correspondant n'est pas présent dans la base de données");
         } else {
-            groupsDao.deleteByIdGroupType(idGroupType);
+            groupsDao.deleteByIdGroup(idGroup);
             return new ResponseEntity(new EmptyJsonResponse(), HttpStatus.OK);
         }
     }

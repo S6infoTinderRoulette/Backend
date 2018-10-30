@@ -14,7 +14,9 @@ public interface GroupsDao extends JpaRepository<Groups, Integer> {
 
     List<Groups> findAll();
 
-    Groups findByIdGroupType(int idGroupType);
+    Groups findByIdGroup(int idGroup);
 
-    void deleteByIdGroupType(int idGroupType);
+    void deleteByIdGroup(int idGroup);
+
+    List<Groups> findByIdClassAndIdGroupType (String idClass, int idGroupType);
 }

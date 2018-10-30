@@ -6,6 +6,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.stream.IntStream;
 
+import com.tinderroulette.backend.rest.exceptions.GroupsIntrouvableException;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.http.HttpEntity;
@@ -46,34 +47,37 @@ public class PartitionneurController {
     @PostMapping (value = "/createGroup/")
     public List<List<MemberClass>> createGroup (HttpEntity<String> httpEntity) throws Exception {
         JSONObject params = new JSONObject(httpEntity.getBody());
-        List<List<MemberClass>> finalList = new ArrayList<>();
-        if (params.has("idClass")) {
-            finalList = createGroupNoParam(params.getString("idClass"));
-            if (params.has("nbMember")) {
-                finalList = createGroupNbPerson(params.getString("idClass"),params.getInt("nbMember"));
-            } else if (params.has("idGroupType")){
-                if (params.has("sizes")) {
-                    String sizes = params.getString("sizes");
-                    String[] integerStrings = sizes.split(",");
-                    int[] sizesInt = new int[integerStrings.length];
-                    for (int i = 0; i < sizesInt.length; i++){
-                        sizesInt[i] = Integer.parseInt(integerStrings[i]);
-                    }
-                    finalList = createGroupGroupTypeAndArray(params.getString("idClass"),params.getInt("idGroupType"),sizesInt);
-                } else {
-                    finalList = createGroupGroupType(params.getString("idClass"),params.getInt("idGroupType"));
-                }
-            } else if (params.has("sizes") && !params.has("idGroupType")) {
-                String sizes = params.getString("sizes");
-                String[] integerStrings = sizes.split(",");
-                int[] sizesInt = new int[integerStrings.length];
-                for (int i = 0; i < sizesInt.length; i++){
-                    sizesInt[i] = Integer.parseInt(integerStrings[i]);
-                }
-                finalList = createGroupArraySizes(params.getString("idClass"),sizesInt);
-            }
-        } else {
-            throw new Exception("Paramètres de post incohérents");
+        List<List<MemberClass>> finalList;
+        boolean [] binParam = {params.has("idClass"),params.has("idGroupType"),params.has("nbMember"),params.has("sizes")};
+
+        int n = 0, l = binParam.length;
+        for (int i = 0; i < l; ++i) {
+            n = (n << 1) + (binParam[i] ? 1 : 0);
+        }
+        switch (n) {
+            case  8 : finalList = createGroupNoParam(params.getString("idClass"));
+                      break;
+            case  9 : String sizes = params.getString("sizes");
+                      String[] integerStrings = sizes.split(",");
+                      int[] sizesInt = new int[integerStrings.length];
+                      for (int i = 0; i < sizesInt.length; i++){
+                         sizesInt[i] = Integer.parseInt(integerStrings[i]);
+                      }
+                      finalList = createGroupArraySizes(params.getString("idClass"),sizesInt);
+                      break;
+            case 10 : finalList = createGroupNbPerson(params.getString("idClass"),params.getInt("nbMember"));
+                      break;
+            case 12 : finalList = createGroupGroupType(params.getString("idClass"),params.getInt("idGroupType"));
+                      break;
+            case 13 : sizes = params.getString("sizes");
+                      integerStrings = sizes.split(",");
+                      sizesInt = new int[integerStrings.length];
+                      for (int i = 0; i < sizesInt.length; i++){
+                          sizesInt[i] = Integer.parseInt(integerStrings[i]);
+                      }
+                      finalList = createGroupGroupTypeAndArray(params.getString("idClass"),params.getInt("idGroupType"),sizesInt);
+                      break;
+            default : throw new Exception("Paramètres de post incohérents");
         }
         return finalList;
     }
@@ -261,16 +265,34 @@ public class PartitionneurController {
     }
 
     public List<List<GroupStudent>> saveGroupStudent(JSONArray classGroups, String idClass, int idGroupType) {
-        List<List<GroupStudent>> groups = new ArrayList<>();
-        for (int i = 0; i < classGroups.length(); i++) {
-            JSONArray subGroup = classGroups.getJSONArray(i);
-            Groups group = groupsDao.save(new Groups(idGroupType, null, idClass));
-            List<GroupStudent> groupStudent = new ArrayList<>();
-            for (int j = 0; j < subGroup.length(); j++) {
-                groupStudent.add(new GroupStudent(subGroup.getJSONObject(j).getString("cip"), group.getIdGroup()));
+        List<Groups> grpTest = groupsDao.findByIdClassAndIdGroupType(idClass,idGroupType);
+        if (idGroupType == 3 && !grpTest.isEmpty()) {
+            throw new GroupsIntrouvableException("Ce tutorat existe déjà dans la base de données !");
+        } else {
+            List<List<GroupStudent>> groups = new ArrayList<>();
+            int indexMax = 0;
+            if (!grpTest.isEmpty() && idGroupType != 3) {
+                for (int i = 0; i < grpTest.size(); i++) {
+                    if (grpTest.get(i).getGroupIndex()> indexMax) {
+                        indexMax = grpTest.get(i).getGroupIndex();
+                    }
+                }
             }
-            groups.add(groupStudentDao.saveAll(groupStudent));
+            for (int i = 0; i < classGroups.length(); i++) {
+                JSONArray subGroup = classGroups.getJSONArray(i);
+                Groups group;
+                if (idGroupType == 3) {
+                    group = groupsDao.save(new Groups(idGroupType, null, idClass, i+1));
+                } else {
+                    group = groupsDao.save(new Groups(idGroupType, null, idClass, indexMax+1));
+                }
+                List<GroupStudent> groupStudent = new ArrayList<>();
+                for (int j = 0; j < subGroup.length(); j++) {
+                    groupStudent.add(new GroupStudent(subGroup.getJSONObject(j).getString("cip"), group.getIdGroup()));
+                }
+                groups.add(groupStudentDao.saveAll(groupStudent));
+            }
+            return groups;
         }
-        return groups;
     }
 }

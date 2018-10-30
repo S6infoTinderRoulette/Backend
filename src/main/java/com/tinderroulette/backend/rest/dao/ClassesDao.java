@@ -11,6 +11,6 @@ public interface ClassesDao extends JpaRepository <Classes,String> {
 
     Classes save (Classes classes);
     List<Classes> findAll();
-    Classes findByIdAp (String IdAp);
-    void deleteByIdAp (String IdAp);
+    Classes findByIdClass (String IdClass);
+    void deleteByIdClass (String IdClass);
 }
