@@ -25,17 +25,17 @@ import java.io.IOException;
 @SpringBootApplication
 public class Application
 {
-	private static final Logger log = LoggerFactory.getLogger(Application.class);
+    private static final Logger log = LoggerFactory.getLogger(Application.class);
 
     public static void main( String[] args ) throws IOException {
-    	SpringApplication.run(Application.class, args);
+        SpringApplication.run(Application.class, args);
 
     }
     @Bean
     public CommandLineRunner runner(MembersDao repositoryM, AppDao repositoryA, MemberClassDao repositoryMC) throws IOException{
         return (args) -> {
-            //appsPopulation("http://zeus.gel.usherbrooke.ca:8080/ms/rest/app_ap?inscription=2018-01-01",repositoryA);
-            //membersPopulation("http://zeus.gel.usherbrooke.ca:8080/ms/rest/etudiant_groupe?inscription=2018-01-01&trimestre_id=A18",repositoryM);
+            appsPopulation("http://zeus.gel.usherbrooke.ca:8080/ms/rest/app_ap?inscription=2010-01-01",repositoryA);
+            membersPopulation("http://zeus.gel.usherbrooke.ca:8080/ms/rest/etudiant_groupe?inscription=2018-01-01&trimestre_id=A18",repositoryM);
             memberClassPopulation("http://zeus.gel.usherbrooke.ca:8080/ms/rest/etudiant_groupe?inscription=2018-01-01&trimestre_id=A18",repositoryMC);
         };
     }

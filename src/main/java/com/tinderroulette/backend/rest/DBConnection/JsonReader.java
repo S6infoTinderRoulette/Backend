@@ -18,16 +18,13 @@ public class JsonReader {
     public static List<App> appReader(String url)throws IOException{
         ObjectMapper mapper = new ObjectMapper();
         return mapper.readValue(new URL(url), new TypeReference<List<App>>(){});
-//        return mapper.readValue(new FileInputStream("ExampleJSON/app_ap_test.json"), new TypeReference<List<App>>(){});
     }
     public static List<Members> memberReader(String url)throws IOException{
         ObjectMapper mapper = new ObjectMapper();
         return mapper.readValue(new URL(url), new TypeReference<List<Members>>(){});
-//        return mapper.readValue(new FileInputStream("ExampleJSON/etudiant_groupe_test.json"), new TypeReference<List<Members>>(){});
     }
     public static List<MemberClass> memberClassReader(String url)throws IOException{
         ObjectMapper mapper = new ObjectMapper();
         return mapper.readValue(new URL(url), new TypeReference<List<MemberClass>>(){});
-//        return mapper.readValue(new FileInputStream("ExampleJSON/etudiant_groupe_test.json"), new TypeReference<List<MemberClass>>(){});
     }
 }

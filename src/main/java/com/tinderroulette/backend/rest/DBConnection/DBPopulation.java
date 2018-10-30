@@ -12,22 +12,32 @@ import static com.tinderroulette.backend.rest.DBConnection.JsonReader.memberRead
 import static com.tinderroulette.backend.rest.DBConnection.JsonReader.appReader;
 
 import java.io.IOException;
+import java.util.Iterator;
 import java.util.List;
 
 
 public class DBPopulation {
     public static void membersPopulation(String url, MembersDao repository)throws IOException {
         List<Members> members = memberReader(url);
-        repository.saveAll(members);
+        for (Iterator<Members> itr = members.iterator(); itr.hasNext(); ) {
+            Members m = itr.next();
+            repository.save(m);
+        }
     }
 
     public static void appsPopulation(String url, AppDao repository)throws IOException {
         List<App> apps = appReader(url);
-        repository.saveAll(apps);
+        for (Iterator<App> itr = apps.iterator(); itr.hasNext(); ) {
+            App a = itr.next();
+            repository.save(a);
+        }
     }
 
     public static void memberClassPopulation(String url, MemberClassDao repository)throws IOException {
         List<MemberClass> memberClasses = memberClassReader(url);
-        repository.saveAll(memberClasses);
+        for (Iterator<MemberClass> itr = memberClasses.iterator(); itr.hasNext(); ) {
+            MemberClass mc= itr.next();
+            repository.save(mc);
+        }
     }
 }
