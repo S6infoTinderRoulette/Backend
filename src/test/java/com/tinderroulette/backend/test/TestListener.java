@@ -19,14 +19,12 @@ import com.tinderroulette.backend.rest.dao.MemberClassDao;
 import com.tinderroulette.backend.rest.dao.MemberStatusDao;
 import com.tinderroulette.backend.rest.dao.MembersDao;
 import com.tinderroulette.backend.rest.dao.RequestDao;
-import com.tinderroulette.backend.rest.dao.RequestTypeDao;
 import com.tinderroulette.backend.rest.model.Activities;
 import com.tinderroulette.backend.rest.model.App;
 import com.tinderroulette.backend.rest.model.GroupType;
 import com.tinderroulette.backend.rest.model.MemberClass;
 import com.tinderroulette.backend.rest.model.MemberStatus;
 import com.tinderroulette.backend.rest.model.Members;
-import com.tinderroulette.backend.rest.model.RequestType;
 
 public class TestListener extends AbstractTestExecutionListener {
 
@@ -66,9 +64,6 @@ public class TestListener extends AbstractTestExecutionListener {
     @Autowired
     private RequestDao requestDao;
 
-    @Autowired
-    private RequestTypeDao requestTypeDao;
-
     @Override
     public void beforeTestClass(TestContext testContext) throws Exception {
         super.beforeTestClass(testContext);
@@ -107,9 +102,6 @@ public class TestListener extends AbstractTestExecutionListener {
         }
         memberClassDao.saveAll(memberClasses);
 
-        requestTypeDao.save(new RequestType(1, "Team"));
-        requestTypeDao.save(new RequestType(2, "Friend"));
-
         groupTypeDao.save(new GroupType(1, "Groupe Activité", 0, 50));
         groupTypeDao.save(new GroupType(2, "Procédural", 0, 4));
         groupTypeDao.save(new GroupType(3, "Tutorat", 0, 50));
@@ -124,7 +116,6 @@ public class TestListener extends AbstractTestExecutionListener {
         testContext.getApplicationContext().getAutowireCapableBeanFactory().autowireBean(this);
 
         requestDao.deleteAll();
-        requestTypeDao.deleteAll();
 
         groupStudentDao.deleteAll();
         memberClassDao.deleteAll();

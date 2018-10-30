@@ -6,13 +6,11 @@ public class RequestId implements Serializable {
     private int idActivity;
     private String cipSeeking;
     private String cipRequested;
-    private int idRequestType;
 
-    public RequestId(int idActivity, String cipSeeking, String cipRequested, int idRequestType) {
+	public RequestId(int idActivity, String cipSeeking, String cipRequested) {
         this.idActivity = idActivity;
         this.cipSeeking = cipSeeking;
         this.cipRequested = cipRequested;
-        this.idRequestType = idRequestType;
     }
 
     public RequestId() {
@@ -40,13 +38,5 @@ public class RequestId implements Serializable {
 
     public void setCipRequested(String cipRequested) {
         this.cipRequested = cipRequested;
-    }
-
-    public int getIdRequestType() {
-        return idRequestType;
-    }
-
-    public void setIdRequestType(int idRequestType) {
-        this.idRequestType = idRequestType;
     }
 }
