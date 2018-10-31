@@ -11,6 +11,7 @@ import com.tinderroulette.backend.rest.dao.ActivitiesDao;
 import com.tinderroulette.backend.rest.dao.ApDao;
 import com.tinderroulette.backend.rest.dao.AppDao;
 import com.tinderroulette.backend.rest.dao.ClassesDao;
+import com.tinderroulette.backend.rest.dao.FriendRequestDao;
 import com.tinderroulette.backend.rest.dao.FriendlistDao;
 import com.tinderroulette.backend.rest.dao.GroupStudentDao;
 import com.tinderroulette.backend.rest.dao.GroupTypeDao;
@@ -19,14 +20,13 @@ import com.tinderroulette.backend.rest.dao.MemberClassDao;
 import com.tinderroulette.backend.rest.dao.MemberStatusDao;
 import com.tinderroulette.backend.rest.dao.MembersDao;
 import com.tinderroulette.backend.rest.dao.RequestDao;
-import com.tinderroulette.backend.rest.dao.RequestTypeDao;
+import com.tinderroulette.backend.rest.dao.SwitchGroupRequestDao;
 import com.tinderroulette.backend.rest.model.Activities;
 import com.tinderroulette.backend.rest.model.App;
 import com.tinderroulette.backend.rest.model.GroupType;
 import com.tinderroulette.backend.rest.model.MemberClass;
 import com.tinderroulette.backend.rest.model.MemberStatus;
 import com.tinderroulette.backend.rest.model.Members;
-import com.tinderroulette.backend.rest.model.RequestType;
 
 public class TestListener extends AbstractTestExecutionListener {
 
@@ -65,9 +65,12 @@ public class TestListener extends AbstractTestExecutionListener {
 
     @Autowired
     private RequestDao requestDao;
-
+    
+    @Autowired 
+    private FriendRequestDao friendRequestDao;
+    
     @Autowired
-    private RequestTypeDao requestTypeDao;
+    private SwitchGroupRequestDao switchGroupRequestDao;
 
     @Override
     public void beforeTestClass(TestContext testContext) throws Exception {
@@ -107,9 +110,6 @@ public class TestListener extends AbstractTestExecutionListener {
         }
         memberClassDao.saveAll(memberClasses);
 
-        requestTypeDao.save(new RequestType(1, "Team"));
-        requestTypeDao.save(new RequestType(2, "Friend"));
-
         groupTypeDao.save(new GroupType(1, "Groupe Activité", 0, 50));
         groupTypeDao.save(new GroupType(2, "Procédural", 0, 4));
         groupTypeDao.save(new GroupType(3, "Tutorat", 0, 50));
@@ -124,7 +124,8 @@ public class TestListener extends AbstractTestExecutionListener {
         testContext.getApplicationContext().getAutowireCapableBeanFactory().autowireBean(this);
 
         requestDao.deleteAll();
-        requestTypeDao.deleteAll();
+        friendRequestDao.deleteAll();
+		switchGroupRequestDao.deleteAll();
 
         groupStudentDao.deleteAll();
         memberClassDao.deleteAll();

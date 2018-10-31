@@ -1,8 +1,6 @@
 package com.tinderroulette.backend.rest.controller;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import javax.validation.Valid;
 
@@ -16,7 +14,6 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.tinderroulette.backend.rest.CAS.ConfigurationController;
 import com.tinderroulette.backend.rest.dao.RequestDao;
 import com.tinderroulette.backend.rest.exceptions.EmptyJsonResponse;
 import com.tinderroulette.backend.rest.exceptions.RequestIntrouvableException;
@@ -67,7 +64,8 @@ public class RequestController {
 
     @PostMapping(value = "/request/")
     public ResponseEntity<Void> addRequest (@Valid @RequestBody Request Request){
-        Request requestTest = requestDao.findByCipRequestedAndCipSeekingAndIdActivityAndIdRequestType(Request.getCipRequested(),Request.getCipSeeking(),Request.getIdActivity(),Request.getIdRequestType());
+		Request requestTest = requestDao.findByCipRequestedAndCipSeekingAndIdActivity(
+				Request.getCipRequested(), Request.getCipSeeking(), Request.getIdActivity());
         if (requestTest != null) {
             throw new RequestIntrouvableException("La Request correspondante est déjà présente dans la base de données");
         } else {
@@ -83,7 +81,8 @@ public class RequestController {
 
     @PutMapping(value = "/request/")
     public ResponseEntity<Void> updateRequest (@Valid @RequestBody Request Request){
-        Request requestTest = requestDao.findByCipRequestedAndCipSeekingAndIdActivityAndIdRequestType(Request.getCipRequested(),Request.getCipSeeking(),Request.getIdActivity(),Request.getIdRequestType());
+		Request requestTest = requestDao.findByCipRequestedAndCipSeekingAndIdActivity(
+				Request.getCipRequested(), Request.getCipSeeking(), Request.getIdActivity());
         if (requestTest == null) {
             throw new RequestIntrouvableException("La Request correspondante n'est pas présente dans la base de données");
         } else {
@@ -97,13 +96,16 @@ public class RequestController {
 
     }
 
-    @DeleteMapping(value = "/request/{ciprequested}/{cipseeking}/{idactivity}/{idrequesttype}/")
-    public ResponseEntity<Void> deleteRequest (@PathVariable String ciprequested, @PathVariable String cipseeking, @PathVariable int idactivity, @PathVariable int idrequesttype ) {
-        Request requestTest = requestDao.findByCipRequestedAndCipSeekingAndIdActivityAndIdRequestType(ciprequested,cipseeking,idactivity,idrequesttype);
+	@DeleteMapping(value = "/request/{ciprequested}/{cipseeking}/{idactivity}/")
+	public ResponseEntity<Void> deleteRequest(@PathVariable String ciprequested, @PathVariable String cipseeking,
+			@PathVariable int idactivity) {
+		Request requestTest = requestDao.findByCipRequestedAndCipSeekingAndIdActivity(ciprequested,
+				cipseeking, idactivity);
         if (requestTest == null) {
             throw new RequestIntrouvableException("La request correspondante n'est pas présente dans la base de données");
         } else {
-            requestDao.deleteByCipRequestedAndCipSeekingAndIdActivityAndIdRequestType(ciprequested,cipseeking,idactivity,idrequesttype);
+			requestDao.deleteByCipRequestedAndCipSeekingAndIdActivity(ciprequested, cipseeking,
+					idactivity);
             return new ResponseEntity(new EmptyJsonResponse(), HttpStatus.OK);
         }
     }

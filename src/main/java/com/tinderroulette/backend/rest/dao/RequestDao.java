@@ -1,16 +1,21 @@
 package com.tinderroulette.backend.rest.dao;
 
-import com.tinderroulette.backend.rest.model.Request;
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
+import com.tinderroulette.backend.rest.model.Request;
 
 @Repository
 public interface RequestDao extends JpaRepository<Request,Long> {
 
     Request save (Request request);
-    void deleteByCipRequestedAndCipSeekingAndIdActivityAndIdRequestType (String CipRequested, String CipSeeking, int IdActivity, int IdRequestType);
+
+	void deleteByCipRequestedAndCipSeekingAndIdActivity(String CipRequested, String CipSeeking,
+			int IdActivity);
     List<Request> findAll ();
-    Request findByCipRequestedAndCipSeekingAndIdActivityAndIdRequestType (String CipRequested, String CipSeeking, int IdActivity, int IdRequestType);
+
+	Request findByCipRequestedAndCipSeekingAndIdActivity(String CipRequested, String CipSeeking,
+			int IdActivity);
 }
