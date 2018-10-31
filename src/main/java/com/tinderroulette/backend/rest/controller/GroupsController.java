@@ -20,8 +20,8 @@ public class GroupsController {
         this.groupsDao = groupsDao;
     }
 
-    @GetMapping(value = "/groups/{idGroupType}")
-    public Groups findByIdGroupType (@PathVariable int idGroup) {
+    @GetMapping(value = "/groups/{idGroup}")
+    public Groups findByIdGroup (@PathVariable int idGroup) {
         return groupsDao.findByIdGroup(idGroup);
     }
 
@@ -36,8 +36,8 @@ public class GroupsController {
         if (groupsTest != null) {
             throw new GroupsIntrouvableException("Le Groups correspondant est déjà présent dans la base de données");
         } else {
-            Groups Groupsput = groupsDao.save(groups);
-            if (Groupsput == null) {
+            Groups groupsput = groupsDao.save(groups);
+            if (groupsput == null) {
                 return ResponseEntity.noContent().build();
             } else {
                 return new ResponseEntity(new EmptyJsonResponse(), HttpStatus.OK);
@@ -52,8 +52,8 @@ public class GroupsController {
         if (groupsTest == null) {
             throw new GroupsIntrouvableException("Le Groups correspondant n'est pas présent dans la base de données");
         } else {
-            Groups Groupsput = groupsDao.save(groups);
-            if (Groupsput == null) {
+            Groups groupsput = groupsDao.save(groups);
+            if (groupsput == null) {
                 return ResponseEntity.noContent().build();
             } else {
                 return new ResponseEntity(new EmptyJsonResponse(), HttpStatus.OK);
@@ -62,7 +62,7 @@ public class GroupsController {
 
     }
 
-    @DeleteMapping(value = "/groups/{idGroupType}/")
+    @DeleteMapping(value = "/groups/{idGroup}/")
     public ResponseEntity<Void> deleteGroups (@PathVariable int idGroup) {
         Groups groupsTest = groupsDao.findByIdGroup(idGroup);
         if (groupsTest == null) {

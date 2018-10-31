@@ -57,8 +57,8 @@ public class ClassesController {
 
     }
 
-    @DeleteMapping(value = "/classes/{idAp}/")
-    public ResponseEntity<Void> deleteFriendlist (@PathVariable String idClass) {
+    @DeleteMapping(value = "/classes/{idClass}/")
+    public ResponseEntity<Void> deleteClasses (@PathVariable String idClass) {
         Classes classesTest = classesDao.findByIdClass(idClass);
         if (classesTest == null) {
             throw new ClassesIntrouvableException("La Classes correspondante n'est pas présente dans la base de données");

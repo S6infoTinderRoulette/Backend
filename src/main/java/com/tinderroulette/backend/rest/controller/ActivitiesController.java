@@ -58,8 +58,8 @@ public class ActivitiesController {
 
     @DeleteMapping(value = "/activities/{idActivity}/")
     public ResponseEntity<Void> deleteActivities (@PathVariable int idActivity) {
-        Activities classesTest = activitiesDao.findByIdActivity(idActivity);
-        if (classesTest == null) {
+        Activities activitiesTest = activitiesDao.findByIdActivity(idActivity);
+        if (activitiesTest == null) {
             throw new ActivitiesIntrouvableException("L'Activities correspondante n'est pas présente dans la base de données");
         } else {
             activitiesDao.deleteByIdActivity(idActivity);

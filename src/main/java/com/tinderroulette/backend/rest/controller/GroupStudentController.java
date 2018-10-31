@@ -27,7 +27,7 @@ public class GroupStudentController {
     }
 
     @GetMapping (value = "/groupstudent/{cip}/{idGroup}")
-    public GroupStudent findByCipAndIdGroup (@PathVariable String cip, int idGroup){
+    public GroupStudent findByCipAndIdGroup (@PathVariable String cip,@PathVariable int idGroup){
         return groupStudentDao.findByCipAndIdGroup(cip, idGroup);
     }
 

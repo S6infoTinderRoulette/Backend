@@ -31,15 +31,13 @@ public class PartitionneurController {
 
     private GroupsDao groupsDao;
     private GroupStudentDao groupStudentDao;
-    private ClassesDao classesDao;
     private GroupTypeDao groupTypeDao;
     private MemberClassDao memberClassDao;
 
-    public PartitionneurController(GroupsDao groupsDao, GroupStudentDao groupStudentDao, ClassesDao classesDao,
+    public PartitionneurController(GroupsDao groupsDao, GroupStudentDao groupStudentDao,
             GroupTypeDao groupTypeDao, MemberClassDao memberClassDao) {
         this.groupsDao = groupsDao;
         this.groupStudentDao = groupStudentDao;
-        this.classesDao = classesDao;
         this.groupTypeDao = groupTypeDao;
         this.memberClassDao = memberClassDao;
     }

@@ -58,8 +58,8 @@ public class ApController {
 
     @DeleteMapping(value = "/ap/{idAp}/")
     public ResponseEntity<Void> deleteAp (@PathVariable String idAp) {
-        Ap classesTest = apDao.findByIdAp(idAp);
-        if (classesTest == null) {
+        Ap apTest = apDao.findByIdAp(idAp);
+        if (apTest == null) {
             throw new ApIntrouvableException("L'Ap correspondante n'est pas présente dans la base de données");
         } else {
             apDao.deleteByIdAp(idAp);
