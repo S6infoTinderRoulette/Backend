@@ -24,9 +24,6 @@ public class Request {
     @Id
     private String cipRequested;
 
-    @Id
-    private int idRequestType;
-
     @Nullable
     @Column(insertable = false)
     private Date requestTimestamp;
@@ -34,11 +31,10 @@ public class Request {
     public Request() {
     }
 
-    public Request(int idActivity, String cipSeeking, String cipRequested, int idRequestType, Date requestTimestamp) {
+	public Request(int idActivity, String cipSeeking, String cipRequested, Date requestTimestamp) {
         this.idActivity = idActivity;
         this.cipSeeking = cipSeeking;
         this.cipRequested = cipRequested;
-        this.idRequestType = idRequestType;
         this.requestTimestamp = requestTimestamp;
     }
 
@@ -65,15 +61,6 @@ public class Request {
     public void setCipRequested(String cipRequested) {
         this.cipRequested = cipRequested;
     }
-
-    public int getIdRequestType() {
-        return idRequestType;
-    }
-
-    public void setIdRequestType(int idRequestType) {
-        this.idRequestType = idRequestType;
-    }
-
     public Date getRequestTimestamp() {
         return requestTimestamp;
     }
