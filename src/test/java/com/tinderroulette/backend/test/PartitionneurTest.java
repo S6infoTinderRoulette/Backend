@@ -52,7 +52,8 @@ public class PartitionneurTest {
     @Test
     public void splitWithSpecificNumber() {
         PartitionneurController partitionneurController = new PartitionneurController(groupsDao, groupStudentDao,
-                classesDao, groupTypeDao, memberClassDao);
+                groupTypeDao, memberClassDao);
+
         List<List<MemberClass>> splittedGroups = partitionneurController.createGroupNbPerson("test0", 4);
         splittedGroups = this.sort(splittedGroups);
         assertEquals(splittedGroups.size(), 3);
@@ -67,7 +68,7 @@ public class PartitionneurTest {
     @Test
     public void splitWithMultipleSize() throws Exception {
         PartitionneurController partitionneurController = new PartitionneurController(groupsDao, groupStudentDao,
-                classesDao, groupTypeDao, memberClassDao);
+                groupTypeDao, memberClassDao);
         List<List<MemberClass>> splittedGroups = partitionneurController.createGroupArraySizes("test0",
                 new int[] { 2, 2, 2, 5 });
         splittedGroups = this.sort(splittedGroups);
@@ -83,7 +84,8 @@ public class PartitionneurTest {
     @Test
     public void saveGroup() throws Exception {
         PartitionneurController partitionneurController = new PartitionneurController(groupsDao, groupStudentDao,
-                classesDao, groupTypeDao, memberClassDao);
+                groupTypeDao, memberClassDao);
+
         List<List<MemberClass>> splittedGroups = partitionneurController.createGroupNbPerson("test1", 2);
         splittedGroups = this.sort(splittedGroups);
         JSONArray jsonSplittedGroups = new JSONArray(splittedGroups);
