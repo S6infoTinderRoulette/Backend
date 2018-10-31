@@ -22,7 +22,6 @@ public class ConfigurationController {
 		if (auth != null && auth.getPrincipal() != null && auth.getPrincipal() instanceof UserDetails) {
 			user = ((UserDetails) auth.getPrincipal()).getUsername();
 		}
-		System.out.println(auth.getName());
 
 		httpServletResponse.addCookie(CASCookie.createCookie("auth_user", auth.getName()));
 		httpServletResponse.addCookie(CASCookie.createCookie("auth_cred", auth.getCredentials().toString()));

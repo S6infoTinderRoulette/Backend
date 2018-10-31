@@ -26,7 +26,6 @@ public class Application
 	@GetMapping(value = "/test/")
 	public ResponseEntity test(@CookieValue("auth_user") Cookie userCookie,
 			@CookieValue("auth_cred") Cookie credCookie) {
-		System.out.println("test");
 		CASCookie.decodeLoginCookie(userCookie, credCookie);
 
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -35,7 +34,6 @@ public class Application
 		if (auth != null && auth.getPrincipal() != null && auth.getPrincipal() instanceof UserDetails) {
 			user = ((UserDetails) auth.getPrincipal()).getUsername();
 		}
-		System.out.println(auth.getName());
 		return new ResponseEntity(auth.getName(), HttpStatus.OK);
 	}
 
