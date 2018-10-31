@@ -19,26 +19,24 @@ import com.tinderroulette.backend.rest.CAS.CASCookie;
 
 @Controller
 @SpringBootApplication
-public class Application
-{
-	private static final Logger log = LoggerFactory.getLogger(Application.class);
+public class Application {
+    private static final Logger log = LoggerFactory.getLogger(Application.class);
 
-	@GetMapping(value = "/test/")
-	public ResponseEntity test(@CookieValue("auth_user") Cookie userCookie,
-			@CookieValue("auth_cred") Cookie credCookie) {
-		CASCookie.decodeLoginCookie(userCookie, credCookie);
+    @GetMapping(value = "/test/")
+    public ResponseEntity test(@CookieValue("auth_user") Cookie userCookie,
+            @CookieValue("auth_cred") Cookie credCookie) {
+        CASCookie.decodeLoginCookie(userCookie, credCookie);
 
-		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
-		String user = "cc";
-		if (auth != null && auth.getPrincipal() != null && auth.getPrincipal() instanceof UserDetails) {
-			user = ((UserDetails) auth.getPrincipal()).getUsername();
-		}
-		return new ResponseEntity(auth.getName(), HttpStatus.OK);
-	}
+        String user = "cc";
+        if (auth != null && auth.getPrincipal() != null && auth.getPrincipal() instanceof UserDetails) {
+            user = ((UserDetails) auth.getPrincipal()).getUsername();
+        }
+        return new ResponseEntity(auth.getName(), HttpStatus.OK);
+    }
 
-    public static void main( String[] args )
-    {
-    	SpringApplication.run(Application.class, args);
+    public static void main(String[] args) {
+        SpringApplication.run(Application.class, args);
     }
 }
