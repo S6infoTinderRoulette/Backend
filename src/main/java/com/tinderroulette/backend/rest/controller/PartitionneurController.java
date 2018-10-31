@@ -69,11 +69,10 @@ public class PartitionneurController {
                       break;
             case 12 : finalList = createGroupGroupType(params.getString("idClass"),params.getInt("idGroupType"));
                       break;
-            case 13 : sizes = params.getString("sizes");
-                      integerStrings = sizes.split(",");
-                      sizesInt = new int[integerStrings.length];
+            case 13 : JSONArray arr = params.getJSONArray("sizes");
+                      sizesInt = new int[arr.length()];
                       for (int i = 0; i < sizesInt.length; i++){
-                          sizesInt[i] = Integer.parseInt(integerStrings[i]);
+                          sizesInt[i] = arr.getInt(i);
                       }
                       finalList = createGroupGroupTypeAndArray(params.getString("idClass"),params.getInt("idGroupType"),sizesInt);
                       break;
