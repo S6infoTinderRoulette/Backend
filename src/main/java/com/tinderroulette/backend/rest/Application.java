@@ -4,12 +4,10 @@ import javax.servlet.http.Cookie;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -24,8 +22,6 @@ import com.tinderroulette.backend.rest.CAS.CASCookie;
 public class Application
 {
 	private static final Logger log = LoggerFactory.getLogger(Application.class);
-	@Autowired
-	AuthenticationProvider authenticationProvider;
 
 	@GetMapping(value = "/test/")
 	public ResponseEntity test(@CookieValue("auth_user") Cookie userCookie,
