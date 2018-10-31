@@ -110,15 +110,19 @@ public class PartitionneurController {
         Collections.shuffle(memberActivity);
         List<List<MemberClass>> groups = new ArrayList<>();
         Iterator<MemberClass> iterator = memberActivity.iterator();
+        List<Integer> optimalValues = createGroups(memberActivity.size(),nbMember);
+
+        int index = 0;
         while (iterator.hasNext()) {
             List<MemberClass> tempoList = new ArrayList<>();
-            for (int j = 0; j < nbMember; j++) {
+            for (int j = 0; j < optimalValues.get(index); j++) {
                 if (iterator.hasNext()) {
                     tempoList.add(iterator.next());
                 } else {
                     break;
                 }
             }
+            ++index;
             groups.add(tempoList);
         }
         return groups;
