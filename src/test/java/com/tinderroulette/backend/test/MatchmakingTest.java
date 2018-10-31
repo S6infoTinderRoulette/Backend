@@ -45,7 +45,7 @@ public class MatchmakingTest extends AbstractTestExecutionListener {
         }
         assertTrue(matchmakingDao.findAllFreeUser(0).equals(memberList));
         assertFalse(matchmakingDao.mergeTeam("member0", "member1", 0));
-        requestDao.save(new Request(0, "member0", "member1", 1, new Date()));
+		requestDao.save(new Request(0, "member0", "member1", new Date()));
         assertTrue(matchmakingDao.mergeTeam("member0", "member1", 0));
         memberList.remove(0);
         memberList.remove(0);
@@ -59,12 +59,12 @@ public class MatchmakingTest extends AbstractTestExecutionListener {
         for (int i = 2; i <= 10; i++) {
             memberList.add(new MemberClass(String.format("%1$-8s", "member" + i), "test0"));
         }
-        requestDao.save(new Request(1, "member0", "member1", 1, new Date()));
-        requestDao.save(new Request(1, "member0", "member2", 1, new Date()));
-        requestDao.save(new Request(1, "member0", "member3", 1, new Date()));
-        requestDao.save(new Request(1, "member4", "member5", 1, new Date()));
-        requestDao.save(new Request(1, "member4", "member6", 1, new Date()));
-        requestDao.save(new Request(1, "member4", "member7", 1, new Date()));
+		requestDao.save(new Request(1, "member0", "member1", new Date()));
+		requestDao.save(new Request(1, "member0", "member2", new Date()));
+		requestDao.save(new Request(1, "member0", "member3", new Date()));
+		requestDao.save(new Request(1, "member4", "member5", new Date()));
+		requestDao.save(new Request(1, "member4", "member6", new Date()));
+		requestDao.save(new Request(1, "member4", "member7", new Date()));
 
         assertTrue(matchmakingDao.mergeTeam("member0", "member1", 1));
         assertTrue(matchmakingDao.mergeTeam("member4", "member5", 1));
@@ -83,10 +83,10 @@ public class MatchmakingTest extends AbstractTestExecutionListener {
 
     @Test
     public void merge2Group() {
-        requestDao.save(new Request(2, "member0", "member1", 1, new Date()));
-        requestDao.save(new Request(2, "member0", "member2", 1, new Date()));
-        requestDao.save(new Request(2, "member3", "member4", 1, new Date()));
-        requestDao.save(new Request(2, "member3", "member0", 1, new Date()));
+		requestDao.save(new Request(2, "member0", "member1", new Date()));
+		requestDao.save(new Request(2, "member0", "member2", new Date()));
+		requestDao.save(new Request(2, "member3", "member4", new Date()));
+		requestDao.save(new Request(2, "member3", "member0", new Date()));
 
         assertTrue(matchmakingDao.mergeTeam("member0", "member1", 2));
         assertTrue(matchmakingDao.mergeTeam("member0", "member2", 2));
@@ -104,12 +104,12 @@ public class MatchmakingTest extends AbstractTestExecutionListener {
 
     @Test
     public void mergeExceeding() {
-        requestDao.save(new Request(3, "member0", "member1", 1, new Date()));
-        requestDao.save(new Request(3, "member0", "member2", 1, new Date()));
-        requestDao.save(new Request(3, "member0", "member3", 1, new Date()));
-        requestDao.save(new Request(3, "member0", "member4", 1, new Date()));
-        requestDao.save(new Request(3, "member0", "member5", 1, new Date()));
-        requestDao.save(new Request(3, "member0", "member6", 1, new Date()));
+		requestDao.save(new Request(3, "member0", "member1", new Date()));
+		requestDao.save(new Request(3, "member0", "member2", new Date()));
+		requestDao.save(new Request(3, "member0", "member3", new Date()));
+		requestDao.save(new Request(3, "member0", "member4", new Date()));
+		requestDao.save(new Request(3, "member0", "member5", new Date()));
+		requestDao.save(new Request(3, "member0", "member6", new Date()));
 
         assertTrue(matchmakingDao.mergeTeam("member0", "member1", 3));
         assertTrue(matchmakingDao.mergeTeam("member0", "member2", 3));

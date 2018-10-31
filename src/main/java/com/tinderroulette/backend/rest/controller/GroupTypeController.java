@@ -48,6 +48,9 @@ public class GroupTypeController {
 
     }
 
+    @GetMapping (value = "/grouptype/defaultValue/{idGroupId}/")
+    public Integer getDefaultGroupSize(@PathVariable int idGroupId){return groupTypeDao.findByIdGroupType(idGroupId).getMaxDefault();}
+
     @PutMapping (value = "/grouptype/")
     public ResponseEntity<Void> updateGroupType (@Valid @RequestBody GroupType groupType){
         GroupType groupTest = groupTypeDao.findByIdGroupType(groupType.getIdGroupType());
