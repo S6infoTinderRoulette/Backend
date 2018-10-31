@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.tinderroulette.backend.rest.CAS.ConfigurationController;
 import com.tinderroulette.backend.rest.dao.ClassesDao;
 import com.tinderroulette.backend.rest.exceptions.ClassesIntrouvableException;
 import com.tinderroulette.backend.rest.exceptions.EmptyJsonResponse;
@@ -31,7 +30,6 @@ public class ClassesController {
 
     @GetMapping(value = "/classes/")
     public List<Classes> findAll () {
-		System.out.println(ConfigurationController.getAuthUser());
         return classesDao.findAll();
     }
 

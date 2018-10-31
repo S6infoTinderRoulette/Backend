@@ -33,10 +33,12 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
         return filter;
     }
 
+
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.authorizeRequests().regexMatchers("/secured.*", "/login", "/", "/index").authenticated().and()
-                .authorizeRequests().regexMatchers("/").permitAll().and().httpBasic()
+		http.authorizeRequests()
+				.regexMatchers("\\/").authenticated().and()
+				.authorizeRequests().regexMatchers("\\/").permitAll().and().httpBasic()
                 .authenticationEntryPoint(authenticationEntryPoint);
         http.csrf().disable();
 		http.cors().configurationSource(request -> new CorsConfiguration().applyPermitDefaultValues());
