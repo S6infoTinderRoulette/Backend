@@ -48,34 +48,38 @@ public class PartitionneurController {
     public List<List<MemberClass>> createGroup (HttpEntity<String> httpEntity) throws Exception {
         JSONObject params = new JSONObject(httpEntity.getBody());
         List<List<MemberClass>> finalList;
-        boolean [] binParam = {params.has("idClass"),params.has("idGroupType"),params.has("nbMember"),params.has("sizes")};
+        boolean [] binParam = {
+                params.has("idClass"),
+                params.has("idGroupType"),
+                params.has("nbMember"),
+                params.has("sizes")
+        };
 
         int n = 0, l = binParam.length;
         for (int i = 0; i < l; ++i) {
             n = (n << 1) + (binParam[i] ? 1 : 0);
         }
         switch (n) {
-            case  8 : finalList = createGroupNoParam(params.getString("idClass"));
-                      break;
-            case  9 : String sizes = params.getString("sizes");
-                      String[] integerStrings = sizes.split(",");
-                      int[] sizesInt = new int[integerStrings.length];
-                      for (int i = 0; i < sizesInt.length; i++){
-                         sizesInt[i] = Integer.parseInt(integerStrings[i]);
-                      }
-                      finalList = createGroupArraySizes(params.getString("idClass"),sizesInt);
-                      break;
-            case 10 : finalList = createGroupNbPerson(params.getString("idClass"),params.getInt("nbMember"));
-                      break;
-            case 12 : finalList = createGroupGroupType(params.getString("idClass"),params.getInt("idGroupType"));
-                      break;
-            case 13 : JSONArray arr = params.getJSONArray("sizes");
-                      sizesInt = new int[arr.length()];
-                      for (int i = 0; i < sizesInt.length; i++){
-                          sizesInt[i] = arr.getInt(i);
-                      }
-                      finalList = createGroupGroupTypeAndArray(params.getString("idClass"),params.getInt("idGroupType"),sizesInt);
-                      break;
+            case 0b1000 : finalList = createGroupNoParam(params.getString("idClass"));
+                          break;
+            case 0b1001 : JSONArray arr = params.getJSONArray("sizes");
+                          int [] sizesInt = new int[arr.length()];
+                          for (int i = 0; i < sizesInt.length; i++){
+                              sizesInt[i] = arr.getInt(i);
+                          }
+                          finalList = createGroupArraySizes(params.getString("idClass"),sizesInt);
+                          break;
+            case 0b1110 : finalList = createGroupNbPerson(params.getString("idClass"),params.getInt("nbMember"));
+                          break;
+            case 0b1100 : finalList = createGroupGroupType(params.getString("idClass"),params.getInt("idGroupType"));
+                          break;
+            case 0b1101 : arr = params.getJSONArray("sizes");
+                          sizesInt = new int[arr.length()];
+                          for (int i = 0; i < sizesInt.length; i++){
+                              sizesInt[i] = arr.getInt(i);
+                          }
+                          finalList = createGroupGroupTypeAndArray(params.getString("idClass"),params.getInt("idGroupType"),sizesInt);
+                          break;
             default : throw new Exception("Paramètres de post incohérents");
         }
         return finalList;
