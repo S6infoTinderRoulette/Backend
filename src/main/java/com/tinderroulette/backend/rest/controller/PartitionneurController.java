@@ -55,21 +55,22 @@ public class PartitionneurController {
             n = (n << 1) + (binParam[i] ? 1 : 0);
         }
         switch (n) {
+            // Useless ATM
             case  8 : finalList = createGroupNoParam(params.getString("idClass"));
                       break;
-            case  9 : String sizes = params.getString("sizes");
-                      String[] integerStrings = sizes.split(",");
-                      int[] sizesInt = new int[integerStrings.length];
+            case  9 : JSONArray arr = params.getJSONArray("sizes");
+                      int [] sizesInt = new int[arr.length()];
                       for (int i = 0; i < sizesInt.length; i++){
-                         sizesInt[i] = Integer.parseInt(integerStrings[i]);
+                          sizesInt[i] = arr.getInt(i);
                       }
                       finalList = createGroupArraySizes(params.getString("idClass"),sizesInt);
                       break;
+            // Useless ATM
             case 10 : finalList = createGroupNbPerson(params.getString("idClass"),params.getInt("nbMember"));
                       break;
             case 12 : finalList = createGroupGroupType(params.getString("idClass"),params.getInt("idGroupType"));
                       break;
-            case 13 : JSONArray arr = params.getJSONArray("sizes");
+            case 13 : arr = params.getJSONArray("sizes");
                       sizesInt = new int[arr.length()];
                       for (int i = 0; i < sizesInt.length; i++){
                           sizesInt[i] = arr.getInt(i);
@@ -79,6 +80,19 @@ public class PartitionneurController {
             default : throw new Exception("Paramètres de post incohérents");
         }
         return finalList;
+    }
+
+    public List<Integer> createGroups(int nbStudent, int max) {
+        int nbGroups = (int) Math.ceil((double)nbStudent/max);
+        List<Integer> optimalValues = new ArrayList();
+        for (int i = 0; i < nbGroups; i++) {
+            optimalValues.add((int) Math.floor((double)nbStudent/nbGroups));
+        }
+        for (int i = 0; i < nbStudent%nbGroups; i++) {
+            optimalValues.set(i,optimalValues.get(i) + 1);
+        }
+
+        return optimalValues;
     }
 
     public List<List<MemberClass>> createGroupNoParam(@PathVariable String idClass) {
@@ -109,40 +123,11 @@ public class PartitionneurController {
 
     public List<List<MemberClass>> createGroupGroupType(@PathVariable String idClass, @PathVariable int idGroupType) {
         GroupType groupType = groupTypeDao.findByIdGroupType(idGroupType);
+        List<List<MemberClass>> groups = new ArrayList<>();
         List<MemberClass> studentActivity = memberClassDao.findByIdClass(idClass);
         Collections.shuffle(studentActivity);
-        List<List<MemberClass>> groups = new ArrayList<>();
         Iterator<MemberClass> iterator = studentActivity.iterator();
-
-        int smallestRemainder = Integer.MAX_VALUE;
-        int totalStudent = studentActivity.size();
-        List<Integer> optimalValues = new ArrayList();
-        for (int i = 0; i <= (groupType.getMaxDefault() - groupType.getMinDefault()); i++) {
-            int currentGroupSize = groupType.getMinDefault() + i;
-            int currentRemainder = totalStudent % currentGroupSize;
-            int currentNumberGroup = totalStudent / currentGroupSize;
-            if (currentRemainder <= (groupType.getMaxDefault() - currentGroupSize) * currentNumberGroup
-                    || totalStudent <= currentGroupSize) {
-                currentRemainder = 0;
-            }
-            if (smallestRemainder >= (currentGroupSize + currentRemainder)) {
-                smallestRemainder = currentGroupSize + currentRemainder;
-                optimalValues = new ArrayList();
-                for (int j = 0; j < currentGroupSize; j++) {
-                    optimalValues.add(groupType.getMinDefault() + i);
-                }
-                if (currentRemainder == 0) {
-                    int diff = groupType.getMaxDefault() - currentGroupSize;
-                    for (int j = 0; j < totalStudent % currentGroupSize; j++) {
-                        optimalValues.set(j % diff, optimalValues.get(j % diff) + 1);
-                    }
-                } 
-                else {
-                    optimalValues.add(currentRemainder);
-                }
-            }
-        }
-
+        List<Integer> optimalValues = createGroups(studentActivity.size(),groupType.getMaxDefault());
         int index = 0;
         while (iterator.hasNext()) {
             List<MemberClass> tempoList = new ArrayList<>();
@@ -204,36 +189,8 @@ public class PartitionneurController {
             }
             groups.add(tempoList);
         }
-        
-        int smallestRemainder = Integer.MAX_VALUE;
-        int totalStudent = studentActivity.size() - IntStream.of(sizes).sum();
-        List<Integer> optimalValues = new ArrayList();
-        for (int i = 0; i <= (groupType.getMaxDefault() - groupType.getMinDefault()); i++) {
-            int currentGroupSize = groupType.getMinDefault() + i;
-            int currentRemainder = totalStudent % currentGroupSize;
-            int currentNumberGroup = totalStudent / currentGroupSize;
-            if (currentRemainder <= (groupType.getMaxDefault() - currentGroupSize) * currentNumberGroup
-                    || totalStudent <= currentGroupSize) {
-                currentRemainder = 0;
-            }
-            if (smallestRemainder >= (currentGroupSize + currentRemainder)) {
-                smallestRemainder = currentGroupSize + currentRemainder;
-                optimalValues = new ArrayList();
-                for (int j = 0; j < currentGroupSize; j++) {
-                    optimalValues.add(groupType.getMinDefault() + i);
-                }
-                if (currentRemainder == 0) {
-                    int diff = groupType.getMaxDefault() - currentGroupSize;
-                    for (int j = 0; j < totalStudent % currentGroupSize; j++) {
-                        optimalValues.set(j % diff, optimalValues.get(j % diff) + 1);
-                    }
-                }
-                else {
-                    optimalValues.add(currentRemainder);
-                }
-            }
-        }
 
+        List<Integer> optimalValues = createGroups(studentActivity.size()-IntStream.of(sizes).sum(),groupType.getMaxDefault());
         int index = 0;
         while (iterator.hasNext()) {
             List<MemberClass> tempoList = new ArrayList<>();
@@ -248,6 +205,7 @@ public class PartitionneurController {
             index++;
         }
         return groups;
+
     }
 
     @PostMapping(value = "/saveGroup/{idClass}/")
