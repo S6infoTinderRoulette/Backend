@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.json.JSONObject;
 import org.springframework.http.HttpEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -33,6 +34,12 @@ public class MatchMakingController {
 		return getOpen ? matchmakingDao.findAllIncompleteGroups(idActivity)
 				: matchmakingDao.findAllFullGroups(idActivity);
 	}
+
+    @DeleteMapping(value = "/matchmaking/{idActivity}")
+    public boolean leaveTeam(@PathVariable int idActivity) {
+        String currUser = ConfigurationController.getAuthUser();
+        return matchmakingDao.leaveTeam(currUser, idActivity);
+    }
 
 	@ResponseBody
 	@PostMapping(value = "/matchmaking/{idActivity}/")
