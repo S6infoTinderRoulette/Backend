@@ -35,7 +35,7 @@ public class ClassesController {
 
     @PostMapping(value = "/class/")
     public ResponseEntity<Void> addClasses (@Valid @RequestBody Classes classes){
-        Classes classesTest = classesDao.findByIdAp(classes.getIdAp());
+        Classes classesTest = classesDao.findByIdClass(classes.getIdClass());
         if (classesTest != null) {
             throw new ClassesIntrouvableException("La Classes correspondante est déjà présente dans la base de données");
         } else {
@@ -51,7 +51,7 @@ public class ClassesController {
 
     @PutMapping(value = "/classes/")
     public ResponseEntity<Void> updateClasses (@Valid @RequestBody Classes classes){
-        Classes classesTest = classesDao.findByIdAp(classes.getIdAp());
+        Classes classesTest = classesDao.findByIdClass(classes.getIdClass());
         if (classesTest == null) {
             throw new ClassesIntrouvableException("La Classes correspondante n'est pas présente dans la base de données");
         } else {
@@ -65,13 +65,13 @@ public class ClassesController {
 
     }
 
-    @DeleteMapping(value = "/classes/{idAp}/")
-    public ResponseEntity<Void> deleteFriendlist (@PathVariable String idAp) {
-        Classes classesTest = classesDao.findByIdAp(idAp);
+    @DeleteMapping(value = "/classes/{idClass}/")
+    public ResponseEntity<Void> deleteClasses (@PathVariable String idClass) {
+        Classes classesTest = classesDao.findByIdClass(idClass);
         if (classesTest == null) {
             throw new ClassesIntrouvableException("La Classes correspondante n'est pas présente dans la base de données");
         } else {
-            classesDao.deleteByIdAp(idAp);
+            classesDao.deleteByIdClass(idClass);
             return new ResponseEntity(new EmptyJsonResponse(), HttpStatus.OK);
         }
     }

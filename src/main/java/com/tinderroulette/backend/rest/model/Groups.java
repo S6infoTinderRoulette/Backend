@@ -18,18 +18,22 @@ public class Groups {
 	private Integer idActivity;
 	@Nullable
 	private String idClass;
+	@Nullable
+	private int groupIndex;
 
-	public Groups(int idGroup, int idGroupType, Integer idActivity, String idClass) {
+	public Groups(int idGroup, int idGroupType, Integer idActivity, String idClass, int groupIndex) {
 		this.idGroup = idGroup;
 		this.idGroupType = idGroupType;
 		this.idActivity = idActivity;
 		this.idClass = idClass;
+		this.groupIndex = groupIndex;
 	}
 
-	public Groups(int idGroupType, Integer idActivity, String idClass) {
+	public Groups(int idGroupType, Integer idActivity, String idClass, int groupIndex) {
 		this.idGroupType = idGroupType;
 		this.idActivity = idActivity;
 		this.idClass = idClass;
+		this.groupIndex = groupIndex;
 	}
 
 	public Groups() {
@@ -65,5 +69,13 @@ public class Groups {
 
 	public void setIdClass(String idClass) {
 		this.idClass = idClass;
+	}
+
+	public int getGroupIndex() {
+		return groupIndex;
+	}
+
+	public void setGroupIndex(int groupIndex) {
+		this.groupIndex = groupIndex;
 	}
 }

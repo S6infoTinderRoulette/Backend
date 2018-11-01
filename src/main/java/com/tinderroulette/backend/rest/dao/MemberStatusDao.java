@@ -13,6 +13,6 @@ public interface MemberStatusDao extends JpaRepository<MemberStatus, Long> {
     MemberStatus save (MemberStatus memberStatus);
     List<MemberStatus> findAll ();
     MemberStatus findByIdMemberStatus (int idMemberStatus);
-    MemberStatus findByStatus (String status);
+    List<MemberStatus> findByStatus (String status);
 
 }

@@ -36,7 +36,7 @@ public class GroupTypeController {
     public ResponseEntity<Void> addGroupType (@Valid @RequestBody GroupType groupType){
         GroupType groupTest = groupTypeDao.findByIdGroupType(groupType.getIdGroupType());
         if (groupTest != null) {
-            throw new GroupTypeIntrouvableException("Le membre correspondant au CIP : " + groupType.getIdGroupType() + " est déjà présent dans la base de données");
+            throw new GroupTypeIntrouvableException("Le GroupType correspondant au groupType : " + groupType.getIdGroupType() + " est déjà présent dans la base de données");
         } else {
             GroupType groupTypePut = groupTypeDao.save(groupType);
             if (groupTypePut == null) {
@@ -48,11 +48,14 @@ public class GroupTypeController {
 
     }
 
+    @GetMapping (value = "/grouptype/defaultValue/{idGroupId}/")
+    public Integer getDefaultGroupSize(@PathVariable int idGroupId){return groupTypeDao.findByIdGroupType(idGroupId).getMaxDefault();}
+
     @PutMapping (value = "/grouptype/")
     public ResponseEntity<Void> updateGroupType (@Valid @RequestBody GroupType groupType){
         GroupType groupTest = groupTypeDao.findByIdGroupType(groupType.getIdGroupType());
         if (groupTest == null) {
-            throw new GroupTypeIntrouvableException("Le membre correspondant au CIP : " + groupType.getIdGroupType() + " est déjà présent dans la base de données");
+            throw new GroupTypeIntrouvableException("Le GroupType correspondant au groupType : " + groupType.getIdGroupType() + " est déjà présent dans la base de données");
         } else {
             GroupType groupTypePut = groupTypeDao.save(groupType);
             if (groupTypePut == null) {
@@ -68,7 +71,7 @@ public class GroupTypeController {
     public ResponseEntity <Void> deleteGroupType (@PathVariable int idGroupId) {
         GroupType groupTest = groupTypeDao.findByIdGroupType(idGroupId);
         if (groupTest == null) {
-            throw new GroupTypeIntrouvableException("Le membre correspondant au CIP : " + idGroupId + " n'est pas présent dans la base de données");
+            throw new GroupTypeIntrouvableException("Le GroupType correspondant au groupType : " + idGroupId + " n'est pas présent dans la base de données");
         } else {
             groupTypeDao.deleteByIdGroupType(idGroupId);
             return new ResponseEntity(new EmptyJsonResponse(), HttpStatus.OK);

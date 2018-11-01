@@ -58,8 +58,8 @@ public class AppController {
 
     @DeleteMapping(value = "/app/{idApp}/")
     public ResponseEntity<Void> deleteApp (@PathVariable String idApp) {
-        App classesTest = appDao.findByIdApp(idApp);
-        if (classesTest == null) {
+        App appTest = appDao.findByIdApp(idApp);
+        if (appTest == null) {
             throw new AppIntrouvableException("L'App correspondante n'est pas présente dans la base de données");
         } else {
             appDao.deleteByIdApp(idApp);
