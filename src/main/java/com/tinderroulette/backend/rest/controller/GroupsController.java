@@ -20,9 +20,9 @@ public class GroupsController {
         this.groupsDao = groupsDao;
     }
 
-    @GetMapping(value = "/groups/{idGroupType}")
-    public Groups findByIdGroupType (@PathVariable int idGroupType) {
-        return groupsDao.findByIdGroupType(idGroupType);
+    @GetMapping(value = "/groups/{idGroup}")
+    public Groups findByIdGroup (@PathVariable int idGroup) {
+        return groupsDao.findByIdGroup(idGroup);
     }
 
     @GetMapping(value = "/groups/")
@@ -32,12 +32,12 @@ public class GroupsController {
 
     @PostMapping(value = "/groups/")
     public ResponseEntity<Void> addGroups (@Valid @RequestBody Groups groups) {
-        Groups groupsTest = groupsDao.findByIdGroupType(groups.getIdGroupType());
+        Groups groupsTest = groupsDao.findByIdGroup(groups.getIdGroup());
         if (groupsTest != null) {
             throw new GroupsIntrouvableException("Le Groups correspondant est déjà présent dans la base de données");
         } else {
-            Groups Groupsput = groupsDao.save(groups);
-            if (Groupsput == null) {
+            Groups groupsput = groupsDao.save(groups);
+            if (groupsput == null) {
                 return ResponseEntity.noContent().build();
             } else {
                 return new ResponseEntity(new EmptyJsonResponse(), HttpStatus.OK);
@@ -48,12 +48,12 @@ public class GroupsController {
 
     @PutMapping(value = "/groups/")
     public ResponseEntity<Void> updateGroups (@Valid @RequestBody Groups groups) {
-        Groups groupsTest = groupsDao.findByIdGroupType(groups.getIdGroupType());
+        Groups groupsTest = groupsDao.findByIdGroup(groups.getIdGroup());
         if (groupsTest == null) {
-            throw new GroupsIntrouvableException("Le MemberStatus correspondant n'est pas présent dans la base de données");
+            throw new GroupsIntrouvableException("Le Groups correspondant n'est pas présent dans la base de données");
         } else {
-            Groups Groupsput = groupsDao.save(groups);
-            if (Groupsput == null) {
+            Groups groupsput = groupsDao.save(groups);
+            if (groupsput == null) {
                 return ResponseEntity.noContent().build();
             } else {
                 return new ResponseEntity(new EmptyJsonResponse(), HttpStatus.OK);
@@ -62,13 +62,13 @@ public class GroupsController {
 
     }
 
-    @DeleteMapping(value = "/groups/{idGroupType}/")
-    public ResponseEntity<Void> deleteGroups (@PathVariable int idGroupType) {
-        Groups groupsTest = groupsDao.findByIdGroupType(idGroupType);
+    @DeleteMapping(value = "/groups/{idGroup}/")
+    public ResponseEntity<Void> deleteGroups (@PathVariable int idGroup) {
+        Groups groupsTest = groupsDao.findByIdGroup(idGroup);
         if (groupsTest == null) {
             throw new GroupsIntrouvableException("Le Groups correspondant n'est pas présent dans la base de données");
         } else {
-            groupsDao.deleteByIdGroupType(idGroupType);
+            groupsDao.deleteByIdGroup(idGroup);
             return new ResponseEntity(new EmptyJsonResponse(), HttpStatus.OK);
         }
     }

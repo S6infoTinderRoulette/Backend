@@ -21,8 +21,8 @@ public class MemberClassController {
     }
 
     @GetMapping(value = "/memberclass/{cip}/{idClass}/")
-    public MemberClass findByCip (@PathVariable String cip, @PathVariable String idClass) {
-        return memberClassDao.findByCipAndAndIdClass(cip, idClass);
+    public MemberClass findByCipAndIdClass (@PathVariable String cip, @PathVariable String idClass) {
+        return memberClassDao.findByCipAndIdClass(cip, idClass);
     }
 
     @GetMapping(value = "/memberclass/{idClass}/")
@@ -37,7 +37,7 @@ public class MemberClassController {
 
     @PostMapping(value = "/memberclass/")
     public ResponseEntity<Void> addMemberClass (@Valid @RequestBody MemberClass memberclass){
-        MemberClass memberClassTest = memberClassDao.findByCipAndAndIdClass(memberclass.getCip(), memberclass.getIdClass());
+        MemberClass memberClassTest = memberClassDao.findByCipAndIdClass(memberclass.getCip(), memberclass.getIdClass());
         if (memberClassTest != null) {
             throw new MemberClassIntrouvableException("Le membreclass correspondant est déjà présent dans la base de données");
         } else {
@@ -53,7 +53,7 @@ public class MemberClassController {
 
     @PutMapping(value = "/memberclass/")
     public ResponseEntity<Void> updateMemberClass (@Valid @RequestBody MemberClass memberClass){
-        MemberClass memberClassTest = memberClassDao.findByCipAndAndIdClass(memberClass.getCip(),memberClass.getIdClass());
+        MemberClass memberClassTest = memberClassDao.findByCipAndIdClass(memberClass.getCip(),memberClass.getIdClass());
         if (memberClassTest == null) {
             throw new MemberClassIntrouvableException("Le membreclass correspondant n'est pas présent dans la base de données");
         } else {
@@ -70,7 +70,7 @@ public class MemberClassController {
 
     @DeleteMapping (value = "/memberclass/{cip}/{idClass}")
     public ResponseEntity <Void> deleteMemberClass (@PathVariable String cip, @PathVariable String idClass) {
-        MemberClass membertest = memberClassDao.findByCipAndAndIdClass(cip,idClass);
+        MemberClass membertest = memberClassDao.findByCipAndIdClass(cip,idClass);
         if (membertest == null) {
             throw new MemberClassIntrouvableException("Le membreclass correspondant  n'est pas présent dans la base de données");
         } else {
