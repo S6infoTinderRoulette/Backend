@@ -6,25 +6,26 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.stream.IntStream;
 
-import com.tinderroulette.backend.rest.exceptions.GroupsIntrouvableException;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-import com.tinderroulette.backend.rest.dao.ClassesDao;
+import com.tinderroulette.backend.rest.Message;
 import com.tinderroulette.backend.rest.dao.GroupStudentDao;
 import com.tinderroulette.backend.rest.dao.GroupTypeDao;
 import com.tinderroulette.backend.rest.dao.GroupsDao;
 import com.tinderroulette.backend.rest.dao.MemberClassDao;
 import com.tinderroulette.backend.rest.exceptions.EmptyJsonResponse;
+import com.tinderroulette.backend.rest.exceptions.GroupsIntrouvableException;
 import com.tinderroulette.backend.rest.model.GroupStudent;
 import com.tinderroulette.backend.rest.model.GroupType;
 import com.tinderroulette.backend.rest.model.Groups;
 import com.tinderroulette.backend.rest.model.MemberClass;
-
 
 @RestController
 public class PartitionneurController {
@@ -34,63 +35,66 @@ public class PartitionneurController {
     private GroupTypeDao groupTypeDao;
     private MemberClassDao memberClassDao;
 
-    public PartitionneurController(GroupsDao groupsDao, GroupStudentDao groupStudentDao,
-            GroupTypeDao groupTypeDao, MemberClassDao memberClassDao) {
+    public PartitionneurController(GroupsDao groupsDao, GroupStudentDao groupStudentDao, GroupTypeDao groupTypeDao,
+            MemberClassDao memberClassDao) {
         this.groupsDao = groupsDao;
         this.groupStudentDao = groupStudentDao;
         this.groupTypeDao = groupTypeDao;
         this.memberClassDao = memberClassDao;
     }
 
-    @PostMapping (value = "/createGroup/")
-    public List<List<MemberClass>> createGroup (HttpEntity<String> httpEntity) throws Exception {
+    @PostMapping(value = "/createGroup/")
+    public List<List<MemberClass>> createGroup(HttpEntity<String> httpEntity) throws Exception {
         JSONObject params = new JSONObject(httpEntity.getBody());
         List<List<MemberClass>> finalList;
-        boolean [] binParam = {
-                params.has("idClass"),
-                params.has("idGroupType"),
-                params.has("nbMember"),
-                params.has("sizes")
-        };
+        boolean[] binParam = { params.has("idClass"), params.has("idGroupType"), params.has("nbMember"),
+                params.has("sizes") };
 
         int n = 0, l = binParam.length;
         for (int i = 0; i < l; ++i) {
             n = (n << 1) + (binParam[i] ? 1 : 0);
         }
         switch (n) {
-            case 0b1000 : finalList = createGroupNoParam(params.getString("idClass"));
-                          break;
-            case 0b1001 : JSONArray arr = params.getJSONArray("sizes");
-                          int [] sizesInt = new int[arr.length()];
-                          for (int i = 0; i < sizesInt.length; i++){
-                              sizesInt[i] = arr.getInt(i);
-                          }
-                          finalList = createGroupArraySizes(params.getString("idClass"),sizesInt);
-                          break;
-            case 0b1110 : finalList = createGroupNbPerson(params.getString("idClass"),params.getInt("nbMember"));
-                          break;
-            case 0b1100 : finalList = createGroupGroupType(params.getString("idClass"),params.getInt("idGroupType"));
-                          break;
-            case 0b1101 : arr = params.getJSONArray("sizes");
-                          sizesInt = new int[arr.length()];
-                          for (int i = 0; i < sizesInt.length; i++){
-                              sizesInt[i] = arr.getInt(i);
-                          }
-                          finalList = createGroupGroupTypeAndArray(params.getString("idClass"),params.getInt("idGroupType"),sizesInt);
-                          break;
-            default : throw new Exception("Paramètres de post incohérents");
+        case 0b1000:
+            finalList = createGroupNoParam(params.getString("idClass"));
+            break;
+        case 0b1001:
+            JSONArray arr = params.getJSONArray("sizes");
+            int[] sizesInt = new int[arr.length()];
+            for (int i = 0; i < sizesInt.length; i++) {
+                sizesInt[i] = arr.getInt(i);
+            }
+            finalList = createGroupArraySizes(params.getString("idClass"), sizesInt);
+            break;
+        case 0b1110:
+            finalList = createGroupNbPerson(params.getString("idClass"), params.getInt("nbMember"));
+            break;
+        case 0b1100:
+            finalList = createGroupGroupType(params.getString("idClass"), params.getInt("idGroupType"));
+            break;
+        case 0b1101:
+            arr = params.getJSONArray("sizes");
+            sizesInt = new int[arr.length()];
+            for (int i = 0; i < sizesInt.length; i++) {
+                sizesInt[i] = arr.getInt(i);
+            }
+            finalList = createGroupGroupTypeAndArray(params.getString("idClass"), params.getInt("idGroupType"),
+                    sizesInt);
+            break;
+        default:
+            throw new Exception(Message.PARTITIONNEUR_PARAM_ERROR.toString());
         }
         return finalList;
     }
 
     public List<Integer> createGroups(int nbStudent, int max) {
-        int nbGroups = (int) Math.ceil((double)nbStudent/max);
+        int nbGroups = (int) Math.ceil((double) nbStudent / max);
         List<Integer> optimalValues = new ArrayList();
         for (int i = 0; i < nbGroups; i++) {
-            optimalValues.add((int) Math.floor((double)nbStudent/nbGroups));
+            optimalValues.add((int) Math.floor((double) nbStudent / nbGroups));
         }
-        for (int i = 0; i < nbStudent%nbGroups; i++) {
-            optimalValues.set(i,optimalValues.get(i) + 1);
+        for (int i = 0; i < nbStudent % nbGroups; i++) {
+            optimalValues.set(i, optimalValues.get(i) + 1);
         }
 
         return optimalValues;
@@ -108,7 +112,7 @@ public class PartitionneurController {
         Collections.shuffle(memberActivity);
         List<List<MemberClass>> groups = new ArrayList<>();
         Iterator<MemberClass> iterator = memberActivity.iterator();
-        List<Integer> optimalValues = createGroups(memberActivity.size(),nbMember);
+        List<Integer> optimalValues = createGroups(memberActivity.size(), nbMember);
 
         int index = 0;
         while (iterator.hasNext()) {
@@ -132,7 +136,7 @@ public class PartitionneurController {
         List<MemberClass> studentActivity = memberClassDao.findByIdClass(idClass);
         Collections.shuffle(studentActivity);
         Iterator<MemberClass> iterator = studentActivity.iterator();
-        List<Integer> optimalValues = createGroups(studentActivity.size(),groupType.getMaxDefault());
+        List<Integer> optimalValues = createGroups(studentActivity.size(), groupType.getMaxDefault());
         int index = 0;
         while (iterator.hasNext()) {
             List<MemberClass> tempoList = new ArrayList<>();
@@ -153,7 +157,7 @@ public class PartitionneurController {
             throws Exception {
         List<MemberClass> studentActivity = memberClassDao.findByIdClass(idClass);
         if (IntStream.of(sizes).sum() > studentActivity.size()) {
-            throw new Exception("La somme des tailles des groupe est inférieure au nombre d'étudiants inscrits !");
+            throw new Exception(Message.PARTITIONNEUR_SUM_EXCEED.toString());
         } else {
             Collections.shuffle(studentActivity);
             List<List<MemberClass>> groups = new ArrayList<>();
@@ -195,7 +199,8 @@ public class PartitionneurController {
             groups.add(tempoList);
         }
 
-        List<Integer> optimalValues = createGroups(studentActivity.size()-IntStream.of(sizes).sum(),groupType.getMaxDefault());
+        List<Integer> optimalValues = createGroups(studentActivity.size() - IntStream.of(sizes).sum(),
+                groupType.getMaxDefault());
         int index = 0;
         while (iterator.hasNext()) {
             List<MemberClass> tempoList = new ArrayList<>();
@@ -227,15 +232,15 @@ public class PartitionneurController {
     }
 
     public List<List<GroupStudent>> saveGroupStudent(JSONArray classGroups, String idClass, int idGroupType) {
-        List<Groups> grpTest = groupsDao.findByIdClassAndIdGroupType(idClass,idGroupType);
+        List<Groups> grpTest = groupsDao.findByIdClassAndIdGroupType(idClass, idGroupType);
         if (idGroupType == 3 && !grpTest.isEmpty()) {
-            throw new GroupsIntrouvableException("Ce tutorat existe déjà dans la base de données !");
+            throw new GroupsIntrouvableException(Message.PARTITIONNEUR_TUTORAT_EXIST.toString());
         } else {
             List<List<GroupStudent>> groups = new ArrayList<>();
             int indexMax = 0;
             if (!grpTest.isEmpty() && idGroupType != 3) {
                 for (int i = 0; i < grpTest.size(); i++) {
-                    if (grpTest.get(i).getGroupIndex()> indexMax) {
+                    if (grpTest.get(i).getGroupIndex() > indexMax) {
                         indexMax = grpTest.get(i).getGroupIndex();
                     }
                 }
@@ -244,9 +249,9 @@ public class PartitionneurController {
                 JSONArray subGroup = classGroups.getJSONArray(i);
                 Groups group;
                 if (idGroupType == 3) {
-                    group = groupsDao.save(new Groups(idGroupType, null, idClass, i+1));
+                    group = groupsDao.save(new Groups(idGroupType, null, idClass, i + 1));
                 } else {
-                    group = groupsDao.save(new Groups(idGroupType, null, idClass, indexMax+1));
+                    group = groupsDao.save(new Groups(idGroupType, null, idClass, indexMax + 1));
                 }
                 List<GroupStudent> groupStudent = new ArrayList<>();
                 for (int j = 0; j < subGroup.length(); j++) {
