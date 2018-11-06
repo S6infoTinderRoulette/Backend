@@ -28,8 +28,12 @@ public enum Message {
     REQUEST_NOT_EXIST("La Request correspondante n'est pas présente dans la base de données"),
     SWITCHREQUEST_EXIST("La switchGroupRequest correspondante est déjà présente dans la base de données"),
     SWITCHREQUEST_NOT_EXIST("La switchGroupRequest correspondante n'est pas présente dans la base de données"),
+
     // Matchmaking messages
     MATCH_SUCCESS("{0} et {1} sont maintenant en équipe"),
+
+    // SWITCHREQUEST messages
+    SWITCH_SUCCESS("{0} et {1} ont échangé de tutorat"),
 
     // Partitionneur messages
     PARTITIONNEUR_PARAM_ERROR("Paramètres de post incohérents"),
