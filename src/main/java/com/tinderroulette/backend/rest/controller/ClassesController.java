@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.tinderroulette.backend.rest.Message;
 import com.tinderroulette.backend.rest.dao.ClassesDao;
 import com.tinderroulette.backend.rest.exceptions.ClassesIntrouvableException;
 import com.tinderroulette.backend.rest.exceptions.EmptyJsonResponse;
@@ -29,15 +30,15 @@ public class ClassesController {
     }
 
     @GetMapping(value = "/classes/")
-    public List<Classes> findAll () {
+    public List<Classes> findAll() {
         return classesDao.findAll();
     }
 
     @PostMapping(value = "/class/")
-    public ResponseEntity<Void> addClasses (@Valid @RequestBody Classes classes){
+    public ResponseEntity<Void> addClasses(@Valid @RequestBody Classes classes) {
         Classes classesTest = classesDao.findByIdClass(classes.getIdClass());
         if (classesTest != null) {
-            throw new ClassesIntrouvableException("La Classes correspondante est déjà présente dans la base de données");
+            throw new ClassesIntrouvableException(Message.CLASS_EXIST.toString());
         } else {
             Classes classesput = classesDao.save(classes);
             if (classesput == null) {
@@ -50,10 +51,10 @@ public class ClassesController {
     }
 
     @PutMapping(value = "/classes/")
-    public ResponseEntity<Void> updateClasses (@Valid @RequestBody Classes classes){
+    public ResponseEntity<Void> updateClasses(@Valid @RequestBody Classes classes) {
         Classes classesTest = classesDao.findByIdClass(classes.getIdClass());
         if (classesTest == null) {
-            throw new ClassesIntrouvableException("La Classes correspondante n'est pas présente dans la base de données");
+            throw new ClassesIntrouvableException(Message.CLASS_NOT_EXIST.toString());
         } else {
             Classes classesput = classesDao.save(classes);
             if (classesput == null) {
@@ -66,10 +67,10 @@ public class ClassesController {
     }
 
     @DeleteMapping(value = "/classes/{idClass}/")
-    public ResponseEntity<Void> deleteClasses (@PathVariable String idClass) {
+    public ResponseEntity<Void> deleteClasses(@PathVariable String idClass) {
         Classes classesTest = classesDao.findByIdClass(idClass);
         if (classesTest == null) {
-            throw new ClassesIntrouvableException("La Classes correspondante n'est pas présente dans la base de données");
+            throw new ClassesIntrouvableException(Message.CLASS_NOT_EXIST.toString());
         } else {
             classesDao.deleteByIdClass(idClass);
             return new ResponseEntity(new EmptyJsonResponse(), HttpStatus.OK);

@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.tinderroulette.backend.rest.Message;
 import com.tinderroulette.backend.rest.dao.GroupStudentDao;
 import com.tinderroulette.backend.rest.dao.GroupTypeDao;
 import com.tinderroulette.backend.rest.dao.GroupsDao;
@@ -81,7 +82,7 @@ public class PartitionneurController {
                     sizesInt);
             break;
         default:
-            throw new Exception("Paramètres de post incohérents");
+            throw new Exception(Message.PARTITIONNEUR_PARAM_ERROR.toString());
         }
         return finalList;
     }
@@ -156,7 +157,7 @@ public class PartitionneurController {
             throws Exception {
         List<MemberClass> studentActivity = memberClassDao.findByIdClass(idClass);
         if (IntStream.of(sizes).sum() > studentActivity.size()) {
-            throw new Exception("La somme des tailles des groupe est inférieure au nombre d'étudiants inscrits !");
+            throw new Exception(Message.PARTITIONNEUR_SUM_EXCEED.toString());
         } else {
             Collections.shuffle(studentActivity);
             List<List<MemberClass>> groups = new ArrayList<>();
@@ -228,7 +229,7 @@ public class PartitionneurController {
     public List<List<GroupStudent>> saveGroupStudent(JSONArray classGroups, String idClass, int idGroupType) {
         List<Groups> grpTest = groupsDao.findByIdClassAndIdGroupType(idClass, idGroupType);
         if (idGroupType == 3 && !grpTest.isEmpty()) {
-            throw new GroupsIntrouvableException("Ce tutorat existe déjà dans la base de données !");
+            throw new GroupsIntrouvableException(Message.PARTITIONNEUR_TUTORAT_EXIST.toString());
         } else {
             List<List<GroupStudent>> groups = new ArrayList<>();
             int indexMax = 0;
