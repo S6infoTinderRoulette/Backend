@@ -1,6 +1,5 @@
 package com.tinderroulette.backend.rest.controller;
 
-import com.tinderroulette.backend.rest.CAS.ConfigurationController;
 import com.tinderroulette.backend.rest.dao.MemberClassDao;
 import com.tinderroulette.backend.rest.exceptions.EmptyJsonResponse;
 import com.tinderroulette.backend.rest.exceptions.MemberClassIntrouvableException;
@@ -10,7 +9,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.Calendar;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 public class MemberClassController {
@@ -34,9 +35,27 @@ public class MemberClassController {
     @GetMapping (value = "/memberclass/connected/")
     public List<MemberClass> findConnectedUserClasses () {
         String currUser = "pelm2528";//ConfigurationController.getAuthUser();
-        List<MemberClass> classes = memberClassDao.findByCip(currUser);
-
+        List<MemberClass> classes = memberClassDao.findByCip(currUser)
+                                                  .stream()
+                                                  .filter(c -> checkIfCurrentClasses(c.getIdClass()))
+                                                  .collect(Collectors.toList());
         return classes;
+    }
+
+    private boolean checkIfCurrentClasses(String idClass) {
+        char classSemester = idClass.charAt(idClass.length() - 3);
+        String classYear = idClass.substring(idClass.length() - 2);
+
+        int currentMonth = Calendar.getInstance().get(Calendar.MONTH);
+        int currentSemester = (int) Math.floor(currentMonth/4);
+
+        String currentYear = Integer.toString(Calendar.getInstance().get(Calendar.YEAR));
+        currentYear = currentYear.substring(currentYear.length() - 2);
+
+        return (currentYear.equals(classYear)
+                && ((currentSemester == 0 && classSemester == 'H')
+                || (currentSemester == 1 && classSemester == 'E')
+                || (currentSemester == 2 && classSemester == 'A')));
     }
 
     @GetMapping (value = "/memberclass/")
