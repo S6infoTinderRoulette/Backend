@@ -11,57 +11,66 @@ import org.springframework.lang.Nullable;
 @Table(name = "grouptype")
 public class GroupType {
 
-	@Id
-	private int idGroupType;
+    public enum types {
+        Activity(1), Procedural(2), Tutorat(3), Other(4);
+        public final int id;
 
-	@NotNull
-	private String type;
+        types(int id) {
+            this.id = id;
+        }
+    };
 
-	@Nullable
-	private Integer minDefault;
+    @Id
+    private int idGroupType;
 
-	@Nullable
-	private Integer maxDefault;
+    @NotNull
+    private String type;
 
-	public GroupType() {
-	}
+    @Nullable
+    private Integer minDefault;
 
-	public GroupType(int idGroupType, @NotNull String type, Integer minDefault, Integer maxDefault) {
-		this.idGroupType = idGroupType;
-		this.type = type;
-		this.minDefault = minDefault;
-		this.maxDefault = maxDefault;
-	}
+    @Nullable
+    private Integer maxDefault;
 
-	public int getIdGroupType() {
-		return idGroupType;
-	}
+    public GroupType() {
+    }
 
-	public void setIdGroupType(int idGroupType) {
-		this.idGroupType = idGroupType;
-	}
+    public GroupType(int idGroupType, @NotNull String type, Integer minDefault, Integer maxDefault) {
+        this.idGroupType = idGroupType;
+        this.type = type;
+        this.minDefault = minDefault;
+        this.maxDefault = maxDefault;
+    }
 
-	public String getType() {
-		return type;
-	}
+    public int getIdGroupType() {
+        return idGroupType;
+    }
 
-	public void setType(String type) {
-		this.type = type;
-	}
+    public void setIdGroupType(int idGroupType) {
+        this.idGroupType = idGroupType;
+    }
 
-	public Integer getMinDefault() {
-		return minDefault;
-	}
+    public String getType() {
+        return type;
+    }
 
-	public void setMinDefault(Integer minDefault) {
-		this.minDefault = minDefault;
-	}
+    public void setType(String type) {
+        this.type = type;
+    }
 
-	public Integer getMaxDefault() {
-		return maxDefault;
-	}
+    public Integer getMinDefault() {
+        return minDefault != null ? minDefault : 1;
+    }
 
-	public void setMaxDefault(Integer maxDefault) {
-		this.maxDefault = maxDefault;
-	}
+    public void setMinDefault(Integer minDefault) {
+        this.minDefault = minDefault;
+    }
+
+    public Integer getMaxDefault() {
+        return maxDefault != null ? maxDefault : Integer.MAX_VALUE;
+    }
+
+    public void setMaxDefault(Integer maxDefault) {
+        this.maxDefault = maxDefault;
+    }
 }

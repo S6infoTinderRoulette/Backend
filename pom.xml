@@ -19,6 +19,11 @@
 
     <dependencies>
 		<dependency>
+		    <groupId>org.json</groupId>
+		    <artifactId>json</artifactId>
+		    <version>20180813</version>
+		</dependency>    	
+		<dependency>
 		    <groupId>org.apache.logging.log4j</groupId>
 		    <artifactId>log4j-core</artifactId>
 		</dependency>    	
@@ -39,6 +44,11 @@
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+		    <groupId>org.junit.jupiter</groupId>
+		    <artifactId>junit-jupiter-api</artifactId>
+		    <scope>test</scope>
+		</dependency>
         <dependency>
 		    <groupId>org.springframework.boot</groupId>
 		    <artifactId>spring-boot-starter-web</artifactId>
@@ -93,13 +103,22 @@
             <artifactId>spring-security-web</artifactId>
             <version>5.1.0.RELEASE</version>
         </dependency>
-
-
     </dependencies>
 
 
     <build>
         <plugins>
+         	<plugin>
+	            <groupId>org.apache.maven.plugins</groupId>
+	            <artifactId>maven-surefire-plugin</artifactId>
+	            <configuration>
+	                <!-- CircleCI build workaround -->
+	                <argLine>-Xms1024m -Xmx2048m</argLine>
+	                <reuseForks>true</reuseForks>
+	                <useSystemClassLoader>false</useSystemClassLoader>
+	            </configuration>
+	            <version>2.18.1</version><!--$NO-MVN-MAN-VER$-->
+	        </plugin>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>

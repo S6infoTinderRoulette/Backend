@@ -1,15 +1,24 @@
 package com.tinderroulette.backend.rest.controller;
 
+import java.util.List;
+
+import javax.validation.Valid;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.tinderroulette.backend.rest.Message;
 import com.tinderroulette.backend.rest.dao.ApDao;
 import com.tinderroulette.backend.rest.exceptions.ApIntrouvableException;
 import com.tinderroulette.backend.rest.exceptions.EmptyJsonResponse;
 import com.tinderroulette.backend.rest.model.Ap;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
-import javax.validation.Valid;
-import java.util.List;
 
 @RestController
 public class ApController {
@@ -21,15 +30,15 @@ public class ApController {
     }
 
     @GetMapping(value = "/aps/")
-    public List<Ap> findAll () {
+    public List<Ap> findAll() {
         return apDao.findAll();
     }
 
     @PostMapping(value = "/ap/")
-    public ResponseEntity<Void> addAp (@Valid @RequestBody Ap ap){
+    public ResponseEntity<Void> addAp(@Valid @RequestBody Ap ap) {
         Ap apTest = apDao.findByIdAp(ap.getIdAp());
         if (apTest != null) {
-            throw new ApIntrouvableException("L'Ap correspondante est déjà présente dans la base de données");
+            throw new ApIntrouvableException(Message.AP_EXIST.toString());
         } else {
             Ap apPut = apDao.save(ap);
             if (apPut == null) {
@@ -42,10 +51,10 @@ public class ApController {
     }
 
     @PutMapping(value = "/ap/")
-    public ResponseEntity<Void> updateAp (@Valid @RequestBody Ap ap){
+    public ResponseEntity<Void> updateAp(@Valid @RequestBody Ap ap) {
         Ap apTest = apDao.findByIdAp(ap.getIdAp());
         if (apTest == null) {
-            throw new ApIntrouvableException("L'Ap correspondante n'est pas présente dans la base de données");
+            throw new ApIntrouvableException(Message.AP_NOT_EXIST.toString());
         } else {
             Ap apPut = apDao.save(ap);
             if (apPut == null) {
@@ -57,10 +66,10 @@ public class ApController {
     }
 
     @DeleteMapping(value = "/ap/{idAp}/")
-    public ResponseEntity<Void> deleteAp (@PathVariable String idAp) {
-        Ap classesTest = apDao.findByIdAp(idAp);
-        if (classesTest == null) {
-            throw new ApIntrouvableException("L'Ap correspondante n'est pas présente dans la base de données");
+    public ResponseEntity<Void> deleteAp(@PathVariable String idAp) {
+        Ap apTest = apDao.findByIdAp(idAp);
+        if (apTest == null) {
+            throw new ApIntrouvableException((Message.AP_NOT_EXIST.toString()));
         } else {
             apDao.deleteByIdAp(idAp);
             return new ResponseEntity(new EmptyJsonResponse(), HttpStatus.OK);

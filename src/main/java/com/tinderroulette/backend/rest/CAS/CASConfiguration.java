@@ -12,10 +12,14 @@ import org.springframework.security.web.AuthenticationEntryPoint;
 
 @Configuration
 public class CASConfiguration {
+    private static final String SERVICE = "http://localhost:8000/login/cas";
+    private static final String LOGIN_URL = "https://cas.usherbrooke.ca/login";
+    private static final String TICKET = "https://cas.usherbrooke.ca/";
+
     @Bean
     public ServiceProperties serviceProperties() {
         ServiceProperties serviceProperties = new ServiceProperties();
-        serviceProperties.setService("http://localhost:8000/login/cas");
+        serviceProperties.setService(SERVICE);
         serviceProperties.setSendRenew(true);
         return serviceProperties;
     }
@@ -24,14 +28,14 @@ public class CASConfiguration {
     @Primary
     public AuthenticationEntryPoint authenticationEntryPoint(ServiceProperties serviceProperties) {
         CasAuthenticationEntryPoint entryPoint = new CasAuthenticationEntryPoint();
-        entryPoint.setLoginUrl("https://cas.usherbrooke.ca/login");
+        entryPoint.setLoginUrl(LOGIN_URL);
         entryPoint.setServiceProperties(serviceProperties);
         return entryPoint;
     }
 
     @Bean
     public TicketValidator ticketValidator() {
-        return new Cas30ServiceTicketValidator("https://cas.usherbrooke.ca/");
+        return new Cas30ServiceTicketValidator(TICKET);
     }
 
     @Bean

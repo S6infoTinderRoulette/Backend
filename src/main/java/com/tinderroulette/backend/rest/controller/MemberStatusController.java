@@ -1,21 +1,29 @@
 package com.tinderroulette.backend.rest.controller;
 
+import java.util.List;
 
+import javax.validation.Valid;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.tinderroulette.backend.rest.Message;
 import com.tinderroulette.backend.rest.dao.MemberStatusDao;
 import com.tinderroulette.backend.rest.exceptions.EmptyJsonResponse;
 import com.tinderroulette.backend.rest.exceptions.MemberStatusIntrouvableException;
 import com.tinderroulette.backend.rest.model.MemberStatus;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
-import javax.validation.Valid;
-import java.util.List;
 
 @RestController
 public class MemberStatusController {
 
-    private MemberStatusDao memberStatusDao ;
+    private MemberStatusDao memberStatusDao;
 
     public MemberStatusController(MemberStatusDao memberStatusDao) {
         this.memberStatusDao = memberStatusDao;
@@ -32,10 +40,11 @@ public class MemberStatusController {
     }
 
     @PostMapping(value = "/memberStatus/")
-    public ResponseEntity<Void> addMemberStatus (@Valid @RequestBody MemberStatus memberStatus) {
+    public ResponseEntity<Void> addMemberStatus(@Valid @RequestBody MemberStatus memberStatus) {
         MemberStatus memberStatustest = memberStatusDao.findByIdMemberStatus(memberStatus.getIdMemberStatus());
         if (memberStatustest != null) {
-            throw new MemberStatusIntrouvableException("Le MemberStatus correspondant à l'Id  : " + memberStatus.getIdMemberStatus() + " est déjà présent dans la base de données");
+            throw new MemberStatusIntrouvableException(
+                    Message.format(Message.MEMBERSTATUS_EXIST, memberStatus.getIdMemberStatus()));
         } else {
             MemberStatus memberStatusput = memberStatusDao.save(memberStatus);
             if (memberStatusput == null) {
@@ -48,10 +57,11 @@ public class MemberStatusController {
     }
 
     @PutMapping(value = "/memberStatus/")
-    public ResponseEntity<Void> updateMemberStatus (@Valid @RequestBody MemberStatus memberStatus) {
+    public ResponseEntity<Void> updateMemberStatus(@Valid @RequestBody MemberStatus memberStatus) {
         MemberStatus memberStatustest = memberStatusDao.findByIdMemberStatus(memberStatus.getIdMemberStatus());
         if (memberStatustest == null) {
-            throw new MemberStatusIntrouvableException("Le MemberStatus correspondant à l'Id  : " + memberStatus.getIdMemberStatus() + " n'est pas présent dans la base de données");
+            throw new MemberStatusIntrouvableException(
+                    Message.format(Message.MEMBERSTATUS_NOT_EXIST, memberStatus.getIdMemberStatus()));
         } else {
             MemberStatus memberstatusput = memberStatusDao.save(memberStatus);
             if (memberstatusput == null) {
@@ -64,10 +74,10 @@ public class MemberStatusController {
     }
 
     @DeleteMapping(value = "/memberStatus/{idMemberStatus}/")
-    public ResponseEntity<Void> deleteMemberStatus (@PathVariable int idMemberStatus) {
+    public ResponseEntity<Void> deleteMemberStatus(@PathVariable int idMemberStatus) {
         MemberStatus memberStatustest = memberStatusDao.findByIdMemberStatus(idMemberStatus);
         if (memberStatustest == null) {
-            throw new MemberStatusIntrouvableException("Le MemberStatus correspondant à l'Id  : " + idMemberStatus + " n'est pas présent dans la base de données");
+            throw new MemberStatusIntrouvableException(Message.format(Message.MEMBERSTATUS_NOT_EXIST, idMemberStatus));
         } else {
             memberStatusDao.deleteByIdMemberStatus(idMemberStatus);
             return new ResponseEntity(new EmptyJsonResponse(), HttpStatus.OK);
@@ -75,4 +85,3 @@ public class MemberStatusController {
     }
 
 }
-

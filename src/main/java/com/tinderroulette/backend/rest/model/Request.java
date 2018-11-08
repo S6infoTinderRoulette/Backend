@@ -1,12 +1,14 @@
 package com.tinderroulette.backend.rest.model;
 
+import java.util.Date;
+
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.IdClass;
 import javax.persistence.Table;
-import javax.validation.constraints.NotNull;
-import java.io.Serializable;
-import java.util.Date;
+
+import org.springframework.lang.Nullable;
 
 @Entity
 @Table(name = "request")
@@ -22,20 +24,17 @@ public class Request {
     @Id
     private String cipRequested;
 
-    @Id
-    private int idRequestType;
-
-    @NotNull
+    @Nullable
+    @Column(insertable = false)
     private Date requestTimestamp;
 
     public Request() {
     }
 
-    public Request(int idActivity, String cipSeeking, String cipRequested, int idRequestType, Date requestTimestamp) {
+	public Request(int idActivity, String cipSeeking, String cipRequested, Date requestTimestamp) {
         this.idActivity = idActivity;
         this.cipSeeking = cipSeeking;
         this.cipRequested = cipRequested;
-        this.idRequestType = idRequestType;
         this.requestTimestamp = requestTimestamp;
     }
 
@@ -62,15 +61,6 @@ public class Request {
     public void setCipRequested(String cipRequested) {
         this.cipRequested = cipRequested;
     }
-
-    public int getIdRequestType() {
-        return idRequestType;
-    }
-
-    public void setIdRequestType(int idRequestType) {
-        this.idRequestType = idRequestType;
-    }
-
     public Date getRequestTimestamp() {
         return requestTimestamp;
     }
@@ -78,6 +68,5 @@ public class Request {
     public void setRequestTimestamp(Date requestTimestamp) {
         this.requestTimestamp = requestTimestamp;
     }
-
 
 }

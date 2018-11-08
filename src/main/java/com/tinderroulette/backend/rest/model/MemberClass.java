@@ -46,32 +46,15 @@ public class MemberClass {
         this.idClass = idClass;
     }
 
-    private static class MemberClassId implements Serializable {
-        private String cip;
-        private String idClass;
-
-        public MemberClassId(String cip, String idClass) {
-            this.cip = cip;
-            this.idClass = idClass;
+    @Override
+    public boolean equals(Object comparedObject) {
+        if (comparedObject == this) {
+            return true;
         }
-
-        public MemberClassId() {
+        if (!(comparedObject instanceof MemberClass)) {
+            return false;
         }
-
-        public String getCip() {
-            return cip;
-        }
-
-        public void setCip(String cip) {
-            this.cip = cip;
-        }
-
-        public String getIdClass() {
-            return idClass;
-        }
-
-        public void setIdClass(String idClass) {
-            this.idClass = idClass;
-        }
+        MemberClass memberClass = (MemberClass) comparedObject;
+        return memberClass.cip.equalsIgnoreCase(cip) && memberClass.idClass.equalsIgnoreCase(idClass);
     }
 }
