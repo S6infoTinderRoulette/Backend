@@ -14,5 +14,6 @@ public interface MemberClassDao extends JpaRepository<MemberClass,String> {
     MemberClass findByCipAndIdClass (String cip, String idClass);
     List<MemberClass> findAll ();
     List<MemberClass> findByIdClass (String idClass);
+    List<MemberClass> findByCip (String cip);
 
 }

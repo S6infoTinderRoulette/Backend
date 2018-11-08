@@ -12,5 +12,6 @@ public interface ActivitiesDao extends JpaRepository <Activities,String> {
     Activities save (Activities activities);
     List<Activities> findAll();
     Activities findByIdActivity (int idActivity);
+    List<Activities> findByIdClass (String idClass);
     void deleteByIdActivity (int IdActivity);
 }
