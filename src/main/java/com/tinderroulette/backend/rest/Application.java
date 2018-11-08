@@ -10,12 +10,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
 
 import com.tinderroulette.backend.rest.CAS.CASCookie;
+import com.tinderroulette.backend.rest.notification.NotificationData;
+import com.tinderroulette.backend.rest.notification.NotificationDispatcher;
 
 @Controller
 @SpringBootApplication
@@ -26,13 +27,9 @@ public class Application {
     public ResponseEntity test(@CookieValue("auth_user") Cookie userCookie,
             @CookieValue("auth_cred") Cookie credCookie) {
         CASCookie.decodeLoginCookie(userCookie, credCookie);
-
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
-        String user = "cc";
-        if (auth != null && auth.getPrincipal() != null && auth.getPrincipal() instanceof UserDetails) {
-            user = ((UserDetails) auth.getPrincipal()).getUsername();
-        }
+        NotificationDispatcher.addEvent(auth.getPrincipal().toString(), new NotificationData("Test", "Add test event"));
         return new ResponseEntity(auth.getName(), HttpStatus.OK);
     }
 
