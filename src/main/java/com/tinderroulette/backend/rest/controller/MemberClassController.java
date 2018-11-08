@@ -1,5 +1,6 @@
 package com.tinderroulette.backend.rest.controller;
 
+import com.tinderroulette.backend.rest.CAS.ConfigurationController;
 import com.tinderroulette.backend.rest.dao.MemberClassDao;
 import com.tinderroulette.backend.rest.exceptions.EmptyJsonResponse;
 import com.tinderroulette.backend.rest.exceptions.MemberClassIntrouvableException;
@@ -28,6 +29,14 @@ public class MemberClassController {
     @GetMapping(value = "/memberclass/{idClass}/")
     public int findNumberOfStudentByClass (@PathVariable String idClass) {
         return memberClassDao.findByIdClass(idClass).size();
+    }
+
+    @GetMapping (value = "/memberclass/connected/")
+    public List<MemberClass> findConnectedUserClasses () {
+        String currUser = "pelm2528";//ConfigurationController.getAuthUser();
+        List<MemberClass> classes = memberClassDao.findByCip(currUser);
+
+        return classes;
     }
 
     @GetMapping (value = "/memberclass/")
