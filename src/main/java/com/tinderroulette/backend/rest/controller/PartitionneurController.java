@@ -244,18 +244,52 @@ public class PartitionneurController {
         return subGroupList;
     }
 
-    @PutMapping(value = "/saveGroup/")
-    public boolean updateGroup(HttpEntity<String> httpEntity) throws JsonParseException, IOException {
+    @PutMapping(value = "/saveGroup/{idClass}/{idGroupType}/")
+    public boolean updateGroup(HttpEntity<String> httpEntity, @PathVariable String idClass,
+            @PathVariable int idGroupType) throws JsonParseException, IOException {
         JSONArray subGroups = new JSONArray(httpEntity.getBody());
         List<SubGroup> subGroupList = Arrays
                 .asList(new ObjectMapper().readValue(subGroups.toString(), SubGroup[].class));
+        List<Integer> toDelete = new ArrayList<>();
+        Integer index = 1;
+
+        // Find index of group (not tutorat)
+        if (idGroupType != 3) {
+            for (SubGroup subGroup : subGroupList) {
+                Groups group = groupsDao.findByIdGroup(subGroup.getIdGroup());
+                if (group != null) {
+                    index = group.getGroupIndex();
+                    break;
+                }
+            }
+        }
+
         for (SubGroup subGroup : subGroupList) {
+            if (subGroup.getGroupStudentList().isEmpty())
+                toDelete.add(subGroup.getIdGroup());
+            else {
+                Groups group;
+                if (subGroup.getIdGroup() != null)
+                    group = groupsDao.findByIdGroup(subGroup.getIdGroup());
+                else
+                    group = new Groups(idGroupType, null, idClass, index);
+
+                if (idGroupType == 3) { // Reorder tutorat in case of deletion
+                    group.setGroupIndex(index);
+                    subGroup.setIdGroup(groupsDao.save(group).getIdGroup());
+                    index++;
+                } else if (subGroup.getIdGroup() == null)
+                    subGroup.setIdGroup(groupsDao.save(group).getIdGroup());
+            }
             for (GroupStudent groupStudent : subGroup.getGroupStudentList()) {
                 if (groupStudent.getIdGroup() != subGroup.getIdGroup()) {
                     groupStudentDao.delete(groupStudent);
                     groupStudentDao.save(new GroupStudent(groupStudent.getCip(), subGroup.getIdGroup()));
                 }
             }
+        }
+        for (Integer id : toDelete) {
+            groupsDao.deleteByIdGroup(id);
         }
         return true;
     }

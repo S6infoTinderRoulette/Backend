@@ -3,10 +3,10 @@ package com.tinderroulette.backend.rest.model;
 import java.util.List;
 
 public class SubGroup {
-    int idGroup;
+    Integer idGroup;
     List<GroupStudent> groupStudentList;
 
-    public SubGroup(int idGroup, List<GroupStudent> groupStudentList) {
+    public SubGroup(Integer idGroup, List<GroupStudent> groupStudentList) {
         this.idGroup = idGroup;
         this.groupStudentList = groupStudentList;
     }
@@ -15,11 +15,11 @@ public class SubGroup {
 
     }
 
-    public int getIdGroup() {
+    public Integer getIdGroup() {
         return idGroup;
     }
 
-    public void setIdGroup(int idGroup) {
+    public void setIdGroup(Integer idGroup) {
         this.idGroup = idGroup;
     }
 
