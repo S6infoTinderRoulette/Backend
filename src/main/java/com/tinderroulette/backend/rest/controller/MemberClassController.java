@@ -1,6 +1,8 @@
 package com.tinderroulette.backend.rest.controller;
 
+import java.util.Calendar;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.servlet.http.Cookie;
 import javax.validation.Valid;
@@ -47,6 +49,33 @@ public class MemberClassController {
             @CookieValue("auth_cred") Cookie credCookie) throws Exception {
         validator.validate(userCookie, credCookie, Status.Student, Status.Teacher, Status.Admin, Status.Support);
         return memberClassDao.findByIdClass(idClass).size();
+    }
+
+    @GetMapping(value = "/memberclass/connected/")
+    public List<MemberClass> findConnectedUserClasses() {
+        String currUser = "pelm2528";// ConfigurationController.getAuthUser();
+        List<MemberClass> classes = memberClassDao.findByCip(currUser).stream()
+                .filter(c -> checkIfCurrentClasses(c.getIdClass())).collect(Collectors.toList());
+        return classes;
+    }
+
+    private boolean checkIfCurrentClasses(String idClass) {
+        char classSemester = idClass.charAt(idClass.length() - 3);
+        String classYear = idClass.substring(idClass.length() - 2);
+
+        int currentMonth = Calendar.getInstance().get(Calendar.MONTH);
+        int currentSemester = (int) Math.floor(currentMonth / 4);
+
+        String currentYear = Integer.toString(Calendar.getInstance().get(Calendar.YEAR));
+        currentYear = currentYear.substring(currentYear.length() - 2);
+
+        return (currentYear.equals(classYear) && ((currentSemester == 0 && classSemester == 'H')
+                || (currentSemester == 1 && classSemester == 'E') || (currentSemester == 2 && classSemester == 'A')));
+    }
+
+    @GetMapping(value = "/memberclass/student/{cip}/")
+    public List<MemberClass> findClassesofStudent(@PathVariable String cip) {
+        return memberClassDao.findByCip(cip);
     }
 
     @GetMapping(value = "/memberclass/")

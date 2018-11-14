@@ -42,6 +42,17 @@ public class ActivitiesController {
         return activitiesDao.findAll();
     }
 
+    @GetMapping(value = "/activities/associatedTo/{idClass}/")
+    public List<Activities> findActivitiesAssociated(@PathVariable String idClass){
+        return activitiesDao.findByIdClass (idClass);
+    }
+
+    @GetMapping(value = "/activities/{idActivity}/numberOfPartners/")
+    public int getNumberOfPartners (@PathVariable int idActivity){
+        Activities activitiesTest = activitiesDao.findByIdActivity(idActivity);
+        return activitiesTest.getNbPartners();
+    }
+
     @PostMapping(value = "/activities/")
     public ResponseEntity<Void> addActivities(@Valid @RequestBody Activities activities,
             @CookieValue("auth_user") Cookie userCookie, @CookieValue("auth_cred") Cookie credCookie) throws Exception {
