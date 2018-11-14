@@ -10,72 +10,72 @@ import org.springframework.lang.Nullable;
 @Entity
 @Table(name = "groups")
 public class Groups {
-	@Id
-	@GeneratedValue
-	private int idGroup;
-	private int idGroupType;
-	@Nullable
-	private Integer idActivity;
-	@Nullable
-	private String idClass;
-	@Nullable
-	private int groupIndex;
+    @Id
+    @GeneratedValue
+    private int idGroup;
+    private int idGroupType;
+    @Nullable
+    private Integer idActivity;
+    @Nullable
+    private String idClass;
+    @Nullable
+    private Integer groupIndex;
 
-	public Groups(int idGroup, int idGroupType, Integer idActivity, String idClass, int groupIndex) {
-		this.idGroup = idGroup;
-		this.idGroupType = idGroupType;
-		this.idActivity = idActivity;
-		this.idClass = idClass;
-		this.groupIndex = groupIndex;
-	}
+    public Groups(int idGroup, int idGroupType, Integer idActivity, String idClass, Integer groupIndex) {
+        this.idGroup = idGroup;
+        this.idGroupType = idGroupType;
+        this.idActivity = idActivity;
+        this.idClass = idClass;
+        this.groupIndex = groupIndex;
+    }
 
-	public Groups(int idGroupType, Integer idActivity, String idClass, int groupIndex) {
-		this.idGroupType = idGroupType;
-		this.idActivity = idActivity;
-		this.idClass = idClass;
-		this.groupIndex = groupIndex;
-	}
+    public Groups(int idGroupType, Integer idActivity, String idClass, Integer groupIndex) {
+        this.idGroupType = idGroupType;
+        this.idActivity = idActivity;
+        this.idClass = idClass;
+        this.groupIndex = groupIndex;
+    }
 
-	public Groups() {
-	}
+    public Groups() {
+    }
 
-	public int getIdGroup() {
-		return idGroup;
-	}
+    public int getIdGroup() {
+        return idGroup;
+    }
 
-	public void setIdGroup(int idGroup) {
-		this.idGroup = idGroup;
-	}
+    public void setIdGroup(int idGroup) {
+        this.idGroup = idGroup;
+    }
 
-	public int getIdGroupType() {
-		return idGroupType;
-	}
+    public int getIdGroupType() {
+        return idGroupType;
+    }
 
-	public void setIdGroupType(int idGroupType) {
-		this.idGroupType = idGroupType;
-	}
+    public void setIdGroupType(int idGroupType) {
+        this.idGroupType = idGroupType;
+    }
 
-	public Integer getIdActivity() {
-		return idActivity;
-	}
+    public Integer getIdActivity() {
+        return idActivity;
+    }
 
-	public void setIdActivity(Integer idActivity) {
-		this.idActivity = idActivity;
-	}
+    public void setIdActivity(Integer idActivity) {
+        this.idActivity = idActivity;
+    }
 
-	public String getIdClass() {
-		return idClass;
-	}
+    public String getIdClass() {
+        return idClass;
+    }
 
-	public void setIdClass(String idClass) {
-		this.idClass = idClass;
-	}
+    public void setIdClass(String idClass) {
+        this.idClass = idClass;
+    }
 
-	public int getGroupIndex() {
-		return groupIndex;
-	}
+    public Integer getGroupIndex() {
+        return groupIndex;
+    }
 
-	public void setGroupIndex(int groupIndex) {
-		this.groupIndex = groupIndex;
-	}
+    public void setGroupIndex(Integer groupIndex) {
+        this.groupIndex = groupIndex;
+    }
 }
