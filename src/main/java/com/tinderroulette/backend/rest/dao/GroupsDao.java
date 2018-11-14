@@ -21,4 +21,5 @@ public interface GroupsDao extends JpaRepository<Groups, Integer> {
     List<Groups> findByIdClassAndIdGroupType(String idClass, int idGroupType);
 
     List<Groups> findByIdActivity(Integer idActivity);
+    List<Groups> findByGroupIndexAndIdClassAndIdGroupType(int groupIndex, String idClass, int idGroupType);
 }
