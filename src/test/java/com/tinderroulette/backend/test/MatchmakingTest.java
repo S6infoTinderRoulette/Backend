@@ -55,10 +55,6 @@ public class MatchmakingTest extends AbstractTestExecutionListener {
 
     @Test
     public void merge3Member() {
-        List<MemberClass> memberList = new ArrayList<>();
-        for (int i = 2; i <= 10; i++) {
-            memberList.add(new MemberClass(String.format("%1$-8s", "member" + i), "test0"));
-        }
 		requestDao.save(new Request(1, "member0", "member1", new Date()));
 		requestDao.save(new Request(1, "member0", "member2", new Date()));
 		requestDao.save(new Request(1, "member0", "member3", new Date()));
