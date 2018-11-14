@@ -67,7 +67,7 @@ public class MembersController {
 
     }
 
-    @PutMapping(value = "/members/member")
+    @PutMapping(value = "/members/member/")
     public ResponseEntity<Void> updateMember(@Valid @RequestBody Members members,
             @CookieValue("auth_user") Cookie userCookie, @CookieValue("auth_cred") Cookie credCookie) throws Exception {
         validator.validate(userCookie, credCookie, Status.Teacher, Status.Admin, Status.Support);

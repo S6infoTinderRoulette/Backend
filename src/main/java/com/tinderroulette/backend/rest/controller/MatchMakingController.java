@@ -39,9 +39,8 @@ public class MatchMakingController {
     private GroupStudentDao groupStudentDao;
     private ActivitiesDao activitiesDao;
 
-    public MatchMakingController(MatchMakingDao matchmakingDao, PrivilegeValidator validator) {
     public MatchMakingController(MatchMakingDao matchmakingDao, GroupsDao groupsDao, GroupStudentDao groupStudentDao,
-            ActivitiesDao activitiesDao) {
+            ActivitiesDao activitiesDao, PrivilegeValidator validator) {
         this.matchmakingDao = matchmakingDao;
         this.validator = validator;
         this.groupsDao = groupsDao;
@@ -50,7 +49,9 @@ public class MatchMakingController {
     }
 
     @PutMapping(value = "/matchmaking/{idActivity}/{isFinal}/")
-    public HashMap<Integer, List<GroupStudent>> getTeams(@PathVariable int idActivity, @PathVariable boolean isFinal) {
+    public HashMap<Integer, List<GroupStudent>> getTeams(@PathVariable int idActivity, @PathVariable boolean isFinal,
+            @CookieValue("auth_user") Cookie userCookie, @CookieValue("auth_cred") Cookie credCookie) throws Exception {
+        validator.validate(userCookie, credCookie, Status.Teacher, Status.Admin, Status.Support);
         List<Groups> activityGroups = groupsDao.findByIdActivity(idActivity);
         HashMap<Integer, List<GroupStudent>> groupStudents = new HashMap<>();
         for (Groups group : activityGroups) {
@@ -79,7 +80,7 @@ public class MatchMakingController {
                 : matchmakingDao.findAllFullGroups(idActivity);
     }
 
-    @DeleteMapping(value = "/matchmaking/{idActivity}")
+    @DeleteMapping(value = "/matchmaking/{idActivity}/")
     public boolean leaveTeam(@PathVariable int idActivity, @CookieValue("auth_user") Cookie userCookie,
             @CookieValue("auth_cred") Cookie credCookie) throws Exception {
         validator.validate(userCookie, credCookie, Status.Student, Status.Admin, Status.Support);

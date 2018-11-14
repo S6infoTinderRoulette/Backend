@@ -52,8 +52,9 @@ public class MemberClassController {
     }
 
     @GetMapping(value = "/memberclass/connected/")
-    public List<MemberClass> findConnectedUserClasses() {
-        String currUser = "pelm2528";// ConfigurationController.getAuthUser();
+    public List<MemberClass> findConnectedUserClasses(@CookieValue("auth_user") Cookie userCookie,
+            @CookieValue("auth_cred") Cookie credCookie) throws Exception {
+        String currUser = validator.validate(userCookie, credCookie, Status.Student, Status.Admin, Status.Support);
         List<MemberClass> classes = memberClassDao.findByCip(currUser).stream()
                 .filter(c -> checkIfCurrentClasses(c.getIdClass())).collect(Collectors.toList());
         return classes;
@@ -74,7 +75,9 @@ public class MemberClassController {
     }
 
     @GetMapping(value = "/memberclass/student/{cip}/")
-    public List<MemberClass> findClassesofStudent(@PathVariable String cip) {
+    public List<MemberClass> findClassesofStudent(@PathVariable String cip, @CookieValue("auth_user") Cookie userCookie,
+            @CookieValue("auth_cred") Cookie credCookie) throws Exception {
+        validator.validate(userCookie, credCookie, Status.Student, Status.Teacher, Status.Admin, Status.Support);
         return memberClassDao.findByCip(cip);
     }
 
@@ -123,7 +126,7 @@ public class MemberClassController {
 
     }
 
-    @DeleteMapping(value = "/memberclass/{cip}/{idClass}")
+    @DeleteMapping(value = "/memberclass/{cip}/{idClass}/")
     public ResponseEntity<Void> deleteMemberClass(@PathVariable String cip, @PathVariable String idClass,
             @CookieValue("auth_user") Cookie userCookie, @CookieValue("auth_cred") Cookie credCookie) throws Exception {
         validator.validate(userCookie, credCookie, Status.Teacher, Status.Admin, Status.Support);
