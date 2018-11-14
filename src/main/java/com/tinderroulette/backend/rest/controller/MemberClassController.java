@@ -2,10 +2,12 @@ package com.tinderroulette.backend.rest.controller;
 
 import java.util.List;
 
+import javax.servlet.http.Cookie;
 import javax.validation.Valid;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -15,6 +17,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.tinderroulette.backend.rest.Message;
+import com.tinderroulette.backend.rest.CAS.PrivilegeValidator;
+import com.tinderroulette.backend.rest.CAS.Status;
 import com.tinderroulette.backend.rest.dao.MemberClassDao;
 import com.tinderroulette.backend.rest.exceptions.EmptyJsonResponse;
 import com.tinderroulette.backend.rest.exceptions.MemberClassIntrouvableException;
@@ -24,28 +28,38 @@ import com.tinderroulette.backend.rest.model.MemberClass;
 public class MemberClassController {
 
     private MemberClassDao memberClassDao;
+    private PrivilegeValidator validator;
 
-    public MemberClassController(MemberClassDao memberClassDao) {
+    public MemberClassController(MemberClassDao memberClassDao, PrivilegeValidator validator) {
         this.memberClassDao = memberClassDao;
+        this.validator = validator;
     }
 
     @GetMapping(value = "/memberclass/{cip}/{idClass}/")
-    public MemberClass findByCipAndIdClass(@PathVariable String cip, @PathVariable String idClass) {
+    public MemberClass findByCipAndIdClass(@PathVariable String cip, @PathVariable String idClass,
+            @CookieValue("auth_user") Cookie userCookie, @CookieValue("auth_cred") Cookie credCookie) throws Exception {
+        validator.validate(userCookie, credCookie, Status.Student, Status.Teacher, Status.Admin, Status.Support);
         return memberClassDao.findByCipAndIdClass(cip, idClass);
     }
 
     @GetMapping(value = "/memberclass/{idClass}/")
-    public int findNumberOfStudentByClass(@PathVariable String idClass) {
+    public int findNumberOfStudentByClass(@PathVariable String idClass, @CookieValue("auth_user") Cookie userCookie,
+            @CookieValue("auth_cred") Cookie credCookie) throws Exception {
+        validator.validate(userCookie, credCookie, Status.Student, Status.Teacher, Status.Admin, Status.Support);
         return memberClassDao.findByIdClass(idClass).size();
     }
 
     @GetMapping(value = "/memberclass/")
-    public List<MemberClass> findAll() {
+    public List<MemberClass> findAll(@CookieValue("auth_user") Cookie userCookie,
+            @CookieValue("auth_cred") Cookie credCookie) throws Exception {
+        validator.validate(userCookie, credCookie, Status.Student, Status.Teacher, Status.Admin, Status.Support);
         return memberClassDao.findAll();
     }
 
     @PostMapping(value = "/memberclass/")
-    public ResponseEntity<Void> addMemberClass(@Valid @RequestBody MemberClass memberclass) {
+    public ResponseEntity<Void> addMemberClass(@Valid @RequestBody MemberClass memberclass,
+            @CookieValue("auth_user") Cookie userCookie, @CookieValue("auth_cred") Cookie credCookie) throws Exception {
+        validator.validate(userCookie, credCookie, Status.Teacher, Status.Admin, Status.Support);
         MemberClass memberClassTest = memberClassDao.findByCipAndIdClass(memberclass.getCip(),
                 memberclass.getIdClass());
         if (memberClassTest != null) {
@@ -62,7 +76,9 @@ public class MemberClassController {
     }
 
     @PutMapping(value = "/memberclass/")
-    public ResponseEntity<Void> updateMemberClass(@Valid @RequestBody MemberClass memberClass) {
+    public ResponseEntity<Void> updateMemberClass(@Valid @RequestBody MemberClass memberClass,
+            @CookieValue("auth_user") Cookie userCookie, @CookieValue("auth_cred") Cookie credCookie) throws Exception {
+        validator.validate(userCookie, credCookie, Status.Teacher, Status.Admin, Status.Support);
         MemberClass memberClassTest = memberClassDao.findByCipAndIdClass(memberClass.getCip(),
                 memberClass.getIdClass());
         if (memberClassTest == null) {
@@ -79,7 +95,9 @@ public class MemberClassController {
     }
 
     @DeleteMapping(value = "/memberclass/{cip}/{idClass}")
-    public ResponseEntity<Void> deleteMemberClass(@PathVariable String cip, @PathVariable String idClass) {
+    public ResponseEntity<Void> deleteMemberClass(@PathVariable String cip, @PathVariable String idClass,
+            @CookieValue("auth_user") Cookie userCookie, @CookieValue("auth_cred") Cookie credCookie) throws Exception {
+        validator.validate(userCookie, credCookie, Status.Teacher, Status.Admin, Status.Support);
         MemberClass membertest = memberClassDao.findByCipAndIdClass(cip, idClass);
         if (membertest == null) {
             throw new MemberClassIntrouvableException(Message.MEMBERCLASS_NOT_EXIST.toString());

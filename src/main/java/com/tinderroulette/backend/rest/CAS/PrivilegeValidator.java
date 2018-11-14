@@ -10,6 +10,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import com.tinderroulette.backend.rest.Message;
 import com.tinderroulette.backend.rest.dao.MembersDao;
 import com.tinderroulette.backend.rest.model.Members;
 
@@ -28,8 +29,8 @@ public class PrivilegeValidator {
         }
         Members member = membersDao.findByCip(cip);
 
-        if (!Arrays.asList(roles).stream().anyMatch(o -> o.getId() == member.getIdMemberStatus())) {
-            Exception up = new Exception("Vous n'avez pas les droits pour cette fonctionnalité");
+        if (member == null || !Arrays.asList(roles).stream().anyMatch(o -> o.getId() == member.getIdMemberStatus())) {
+            Exception up = new Exception(Message.PRIVILEGE_INSUFFICIENT.toString());
             throw up;
         }
         return cip;

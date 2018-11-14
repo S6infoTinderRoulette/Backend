@@ -17,6 +17,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 
 import com.tinderroulette.backend.rest.Application;
+import com.tinderroulette.backend.rest.CAS.PrivilegeValidator;
 import com.tinderroulette.backend.rest.controller.PartitionneurController;
 import com.tinderroulette.backend.rest.dao.ClassesDao;
 import com.tinderroulette.backend.rest.dao.GroupStudentDao;
@@ -49,10 +50,13 @@ public class PartitionneurTest {
     @Autowired
     private MemberClassDao memberClassDao;
 
+    @Autowired
+    private PrivilegeValidator validator;
+
     @Test
     public void splitWithSpecificNumber() {
         PartitionneurController partitionneurController = new PartitionneurController(groupsDao, groupStudentDao,
-                groupTypeDao, memberClassDao);
+                groupTypeDao, memberClassDao, validator);
 
         List<List<MemberClass>> splittedGroups = partitionneurController.createGroupNbPerson("test0", 4);
         splittedGroups = this.sort(splittedGroups);
@@ -68,7 +72,7 @@ public class PartitionneurTest {
     @Test
     public void splitWithMultipleSize() throws Exception {
         PartitionneurController partitionneurController = new PartitionneurController(groupsDao, groupStudentDao,
-                groupTypeDao, memberClassDao);
+                groupTypeDao, memberClassDao, validator);
         List<List<MemberClass>> splittedGroups = partitionneurController.createGroupArraySizes("test0",
                 new int[] { 2, 2, 2, 5 });
         splittedGroups = this.sort(splittedGroups);
@@ -84,7 +88,7 @@ public class PartitionneurTest {
     @Test
     public void saveGroup() throws Exception {
         PartitionneurController partitionneurController = new PartitionneurController(groupsDao, groupStudentDao,
-                groupTypeDao, memberClassDao);
+                groupTypeDao, memberClassDao, validator);
 
         List<List<MemberClass>> splittedGroups = partitionneurController.createGroupNbPerson("test1", 2);
         splittedGroups = this.sort(splittedGroups);
