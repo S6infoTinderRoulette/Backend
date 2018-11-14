@@ -13,10 +13,7 @@ public interface GroupStudentDao extends JpaRepository<GroupStudent, String> {
     GroupStudent save(GroupStudent groupStudent);
 
     List<GroupStudent> findAll();
-
-    GroupStudent findByCipAndIdGroup(String cip, int idGroup);
-
+    GroupStudent findByCipAndIdGroup (String cip, int idGroup );
     List<GroupStudent> findByIdGroup(int idGroup);
-
-    void deleteByCipAndIdGroup(String cip, int idGroup);
+    void deleteByCipAndIdGroup (String cip, int idGroup );
 }

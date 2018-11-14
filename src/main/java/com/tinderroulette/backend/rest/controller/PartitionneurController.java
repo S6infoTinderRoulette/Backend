@@ -1,6 +1,8 @@
 package com.tinderroulette.backend.rest.controller;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
@@ -14,10 +16,14 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CookieValue;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tinderroulette.backend.rest.Message;
 import com.tinderroulette.backend.rest.CAS.PrivilegeValidator;
 import com.tinderroulette.backend.rest.CAS.Status;
@@ -31,6 +37,7 @@ import com.tinderroulette.backend.rest.model.GroupStudent;
 import com.tinderroulette.backend.rest.model.GroupType;
 import com.tinderroulette.backend.rest.model.Groups;
 import com.tinderroulette.backend.rest.model.MemberClass;
+import com.tinderroulette.backend.rest.model.SubGroup;
 
 @RestController
 public class PartitionneurController {
@@ -225,6 +232,75 @@ public class PartitionneurController {
 
     }
 
+    @GetMapping(value = "/existingGroup/{idClass}/{idGroupType}/{index}/")
+    public List<SubGroup> getExistingGroups(@PathVariable String idClass, @PathVariable int idGroupType,
+            @PathVariable int index) {
+        return reformatSubGroup(groupsDao.findByGroupIndexAndIdClassAndIdGroupType(index, idClass, idGroupType));
+    }
+
+    @GetMapping(value = "/existingGroup/{idClass}/{idGroupType}/")
+    public List<SubGroup> getTutoratGroup(@PathVariable String idClass, @PathVariable int idGroupType) {
+        return reformatSubGroup(groupsDao.findByIdClassAndIdGroupType(idClass, idGroupType));
+    }
+
+    private List<SubGroup> reformatSubGroup(List<Groups> groupList) {
+        List<SubGroup> subGroupList = new ArrayList<>();
+        for (Groups group : groupList) {
+            subGroupList.add(new SubGroup(group.getIdGroup(), groupStudentDao.findByIdGroup(group.getIdGroup())));
+        }
+        return subGroupList;
+    }
+
+    @PutMapping(value = "/saveGroup/{idClass}/{idGroupType}/")
+    public boolean updateGroup(HttpEntity<String> httpEntity, @PathVariable String idClass,
+            @PathVariable int idGroupType) throws JsonParseException, IOException {
+        JSONArray subGroups = new JSONArray(httpEntity.getBody());
+        List<SubGroup> subGroupList = Arrays
+                .asList(new ObjectMapper().readValue(subGroups.toString(), SubGroup[].class));
+        List<Integer> toDelete = new ArrayList<>();
+        Integer index = 1;
+
+        // Find index of group (not tutorat)
+        if (idGroupType != 3) {
+            for (SubGroup subGroup : subGroupList) {
+                Groups group = groupsDao.findByIdGroup(subGroup.getIdGroup());
+                if (group != null) {
+                    index = group.getGroupIndex();
+                    break;
+                }
+            }
+        }
+
+        for (SubGroup subGroup : subGroupList) {
+            if (subGroup.getGroupStudentList().isEmpty())
+                toDelete.add(subGroup.getIdGroup());
+            else {
+                Groups group;
+                if (subGroup.getIdGroup() != null)
+                    group = groupsDao.findByIdGroup(subGroup.getIdGroup());
+                else
+                    group = new Groups(idGroupType, null, idClass, index);
+
+                if (idGroupType == 3) { // Reorder tutorat in case of deletion
+                    group.setGroupIndex(index);
+                    subGroup.setIdGroup(groupsDao.save(group).getIdGroup());
+                    index++;
+                } else if (subGroup.getIdGroup() == null)
+                    subGroup.setIdGroup(groupsDao.save(group).getIdGroup());
+            }
+            for (GroupStudent groupStudent : subGroup.getGroupStudentList()) {
+                if (groupStudent.getIdGroup() != subGroup.getIdGroup()) {
+                    groupStudentDao.delete(groupStudent);
+                    groupStudentDao.save(new GroupStudent(groupStudent.getCip(), subGroup.getIdGroup()));
+                }
+            }
+        }
+        for (Integer id : toDelete) {
+            groupsDao.deleteByIdGroup(id);
+        }
+        return true;
+    }
+
     @PostMapping(value = "/saveGroup/{idClass}/{idGroupType}/")
     public ResponseEntity saveGroupWithType(HttpEntity<String> httpEntity, @PathVariable String idClass,
             @PathVariable int idGroupType, @CookieValue("auth_user") Cookie userCookie,
@@ -249,19 +325,25 @@ public class PartitionneurController {
                     }
                 }
             }
+
+            int index = 0;
             for (int i = 0; i < classGroups.length(); i++) {
                 JSONArray subGroup = classGroups.getJSONArray(i);
                 Groups group;
-                if (idGroupType == 3) {
-                    group = groupsDao.save(new Groups(idGroupType, null, idClass, i + 1));
-                } else {
-                    group = groupsDao.save(new Groups(idGroupType, null, idClass, indexMax + 1));
+                if (!subGroup.isEmpty()) {
+                    if (idGroupType == 3) {
+                        group = groupsDao.save(new Groups(idGroupType, null, idClass, index + 1));
+                    } else {
+                        group = groupsDao.save(new Groups(idGroupType, null, idClass, indexMax + 1));
+                    }
+                    List<GroupStudent> groupStudent = new ArrayList<>();
+                    for (int j = 0; j < subGroup.length(); j++) {
+                        groupStudent
+                                .add(new GroupStudent(subGroup.getJSONObject(j).getString("cip"), group.getIdGroup()));
+                    }
+                    groups.add(groupStudentDao.saveAll(groupStudent));
+                    index++;
                 }
-                List<GroupStudent> groupStudent = new ArrayList<>();
-                for (int j = 0; j < subGroup.length(); j++) {
-                    groupStudent.add(new GroupStudent(subGroup.getJSONObject(j).getString("cip"), group.getIdGroup()));
-                }
-                groups.add(groupStudentDao.saveAll(groupStudent));
             }
             return groups;
         }
