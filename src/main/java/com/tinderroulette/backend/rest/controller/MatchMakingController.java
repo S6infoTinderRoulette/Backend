@@ -1,7 +1,10 @@
 package com.tinderroulette.backend.rest.controller;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 import javax.servlet.http.Cookie;
 
@@ -48,15 +51,39 @@ public class MatchMakingController {
         this.activitiesDao = activitiesDao;
     }
 
-    @PutMapping(value = "/matchmaking/{idActivity}/{isFinal}/")
-    public HashMap<Integer, List<GroupStudent>> getTeams(@PathVariable int idActivity, @PathVariable boolean isFinal,
+    @GetMapping(value = "/matchmaking/{idActivity}/")
+    public HashMap<Integer, List<GroupStudent>> getTeams(@PathVariable int idActivity,
             @CookieValue("auth_user") Cookie userCookie, @CookieValue("auth_cred") Cookie credCookie) throws Exception {
-        validator.validate(userCookie, credCookie, Status.Teacher, Status.Admin, Status.Support);
+        validator.validate(userCookie, credCookie, Status.Student, Status.Teacher, Status.Admin, Status.Support);
         List<Groups> activityGroups = groupsDao.findByIdActivity(idActivity);
         HashMap<Integer, List<GroupStudent>> groupStudents = new HashMap<>();
         for (Groups group : activityGroups) {
             groupStudents.put(group.getIdGroup(), groupStudentDao.findByIdGroup(group.getIdGroup()));
         }
+        return groupStudents;
+    }
+
+    @GetMapping(value = "/matchmaking/userstatus/{idActivity}/")
+    public List<GroupStudent> isUserTeamFull(@PathVariable int idActivity, @CookieValue("auth_user") Cookie userCookie,
+            @CookieValue("auth_cred") Cookie credCookie) throws Exception {
+        String currUser = validator.validate(userCookie, credCookie, Status.Student, Status.Admin, Status.Support);
+        List<GroupStudent> groupStudents = findFreeGroup(idActivity, false, userCookie, credCookie);
+        Optional<GroupStudent> targetStudent = groupStudents.stream().filter(o -> o.getCip().equals(currUser))
+                .findFirst();
+        List<GroupStudent> selfGroup = new ArrayList<GroupStudent>();
+        if (targetStudent.isPresent()) {
+            selfGroup = groupStudents.stream().filter(o -> o.getIdGroup() == targetStudent.get().getIdGroup())
+                    .collect(Collectors.toList());
+        }
+        return selfGroup;
+    }
+
+    @PutMapping(value = "/matchmaking/{idActivity}/{isFinal}/")
+    public HashMap<Integer, List<GroupStudent>> setFinalTeams(@PathVariable int idActivity,
+            @PathVariable boolean isFinal, @CookieValue("auth_user") Cookie userCookie,
+            @CookieValue("auth_cred") Cookie credCookie) throws Exception {
+        validator.validate(userCookie, credCookie, Status.Teacher, Status.Admin, Status.Support);
+        HashMap<Integer, List<GroupStudent>> groupStudents = getTeams(idActivity, userCookie, credCookie);
         if (isFinal) {
             Activities activity = activitiesDao.findByIdActivity(idActivity);
             activity.setFinal(isFinal);
@@ -68,16 +95,26 @@ public class MatchMakingController {
     @GetMapping(value = "/matchmaking/members/{idActivity}/")
     public List<MemberClass> findFreeMembers(@PathVariable int idActivity, @CookieValue("auth_user") Cookie userCookie,
             @CookieValue("auth_cred") Cookie credCookie) throws Exception {
-        validator.validate(userCookie, credCookie, Status.Student, Status.Admin, Status.Support);
-        return matchmakingDao.findAllFreeUser(idActivity);
+        String currUser = validator.validate(userCookie, credCookie, Status.Student, Status.Admin, Status.Support);
+        return matchmakingDao.findAllFreeUser(idActivity).stream().filter(o -> !o.getCip().equals(currUser))
+                .collect(Collectors.toList());
     }
 
     @GetMapping(value = "/matchmaking/groups/{idActivity}/{getOpen}/")
     public List<GroupStudent> findFreeGroup(@PathVariable int idActivity, @PathVariable boolean getOpen,
             @CookieValue("auth_user") Cookie userCookie, @CookieValue("auth_cred") Cookie credCookie) throws Exception {
-        validator.validate(userCookie, credCookie, Status.Student, Status.Admin, Status.Support);
-        return getOpen ? matchmakingDao.findAllIncompleteGroups(idActivity)
+        String currUser = validator.validate(userCookie, credCookie, Status.Student, Status.Admin, Status.Support);
+        List<GroupStudent> groupStudents = getOpen ? matchmakingDao.findAllIncompleteGroups(idActivity)
                 : matchmakingDao.findAllFullGroups(idActivity);
+        if (getOpen) {
+            Optional<GroupStudent> targetStudent = groupStudents.stream().filter(o -> o.getCip().equals(currUser))
+                    .findFirst();
+            if (targetStudent.isPresent()) {
+                groupStudents = groupStudents.stream().filter(o -> o.getIdGroup() != targetStudent.get().getIdGroup())
+                        .collect(Collectors.toList());
+            }
+        }
+        return groupStudents;
     }
 
     @DeleteMapping(value = "/matchmaking/{idActivity}/")
@@ -92,10 +129,9 @@ public class MatchMakingController {
     @PostMapping(value = "/matchmaking/{idActivity}/")
     public boolean mergeTeam(HttpEntity<String> httpEntity, @PathVariable int idActivity,
             @CookieValue("auth_user") Cookie userCookie, @CookieValue("auth_cred") Cookie credCookie) throws Exception {
-        validator.validate(userCookie, credCookie, Status.Student, Status.Admin, Status.Support);
+        String currUser = validator.validate(userCookie, credCookie, Status.Student, Status.Admin, Status.Support);
         JSONObject json = new JSONObject(httpEntity.getBody());
         String seekingCip = json.getString("cip");
-        String currUser = ConfigurationController.getAuthUser();
         boolean result = matchmakingDao.mergeTeam(seekingCip, currUser, idActivity);
         if (result) {
             NotificationData eventData = new NotificationData("Matchmaking",

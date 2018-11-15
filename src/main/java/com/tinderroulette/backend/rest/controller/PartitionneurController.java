@@ -1,6 +1,5 @@
 package com.tinderroulette.backend.rest.controller;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -22,7 +21,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tinderroulette.backend.rest.Message;
 import com.tinderroulette.backend.rest.CAS.PrivilegeValidator;
@@ -232,14 +230,33 @@ public class PartitionneurController {
 
     }
 
+    @GetMapping(value = "/existingGroup/index/{idClass}/{idGroupType}/")
+    public List<Integer> getExistingGroupIndex(@PathVariable String idClass, @PathVariable int idGroupType,
+            @CookieValue("auth_user") Cookie userCookie, @CookieValue("auth_cred") Cookie credCookie) throws Exception {
+        validator.validate(userCookie, credCookie, Status.Teacher, Status.Admin, Status.Support);
+        List<Groups> groups = groupsDao.findByIdClassAndIdGroupType(idClass, idGroupType);
+        List<Integer> index = new ArrayList<Integer>();
+        if (!groups.isEmpty()) {
+            for (Groups group : groups) {
+                index.add(group.getGroupIndex());
+            }
+            Collections.sort(index);
+        }
+        return index;
+    }
+
     @GetMapping(value = "/existingGroup/{idClass}/{idGroupType}/{index}/")
     public List<SubGroup> getExistingGroups(@PathVariable String idClass, @PathVariable int idGroupType,
-            @PathVariable int index) {
+            @PathVariable int index, @CookieValue("auth_user") Cookie userCookie,
+            @CookieValue("auth_cred") Cookie credCookie) throws Exception {
+        validator.validate(userCookie, credCookie, Status.Teacher, Status.Admin, Status.Support);
         return reformatSubGroup(groupsDao.findByGroupIndexAndIdClassAndIdGroupType(index, idClass, idGroupType));
     }
 
     @GetMapping(value = "/existingGroup/{idClass}/{idGroupType}/")
-    public List<SubGroup> getTutoratGroup(@PathVariable String idClass, @PathVariable int idGroupType) {
+    public List<SubGroup> getTutoratGroup(@PathVariable String idClass, @PathVariable int idGroupType,
+            @CookieValue("auth_user") Cookie userCookie, @CookieValue("auth_cred") Cookie credCookie) throws Exception {
+        validator.validate(userCookie, credCookie, Status.Teacher, Status.Admin, Status.Support);
         return reformatSubGroup(groupsDao.findByIdClassAndIdGroupType(idClass, idGroupType));
     }
 
@@ -253,7 +270,9 @@ public class PartitionneurController {
 
     @PutMapping(value = "/saveGroup/{idClass}/{idGroupType}/")
     public boolean updateGroup(HttpEntity<String> httpEntity, @PathVariable String idClass,
-            @PathVariable int idGroupType) throws JsonParseException, IOException {
+            @PathVariable int idGroupType, @CookieValue("auth_user") Cookie userCookie,
+            @CookieValue("auth_cred") Cookie credCookie) throws Exception {
+        validator.validate(userCookie, credCookie, Status.Teacher, Status.Admin, Status.Support);
         JSONArray subGroups = new JSONArray(httpEntity.getBody());
         List<SubGroup> subGroupList = Arrays
                 .asList(new ObjectMapper().readValue(subGroups.toString(), SubGroup[].class));
