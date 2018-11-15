@@ -3,8 +3,10 @@ package com.tinderroulette.backend.rest.controller;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.IntStream;
 
 import javax.servlet.http.Cookie;
@@ -240,6 +242,10 @@ public class PartitionneurController {
             for (Groups group : groups) {
                 index.add(group.getGroupIndex());
             }
+            Set<Integer> distincter = new HashSet<>();
+            distincter.addAll(index);
+            index.clear();
+            index.addAll(distincter);
             Collections.sort(index);
         }
         return index;

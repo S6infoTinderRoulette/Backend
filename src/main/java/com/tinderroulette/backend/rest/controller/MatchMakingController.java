@@ -63,11 +63,12 @@ public class MatchMakingController {
         return groupStudents;
     }
 
-    @GetMapping(value = "/matchmaking/userstatus/{idActivity}/")
-    public List<GroupStudent> isUserTeamFull(@PathVariable int idActivity, @CookieValue("auth_user") Cookie userCookie,
-            @CookieValue("auth_cred") Cookie credCookie) throws Exception {
+    @GetMapping(value = "/matchmaking/userstatus/{idActivity}/{getOpen}/")
+    public List<GroupStudent> isUserTeamFull(@PathVariable int idActivity, @PathVariable boolean getOpen,
+            @CookieValue("auth_user") Cookie userCookie, @CookieValue("auth_cred") Cookie credCookie) throws Exception {
         String currUser = validator.validate(userCookie, credCookie, Status.Student, Status.Admin, Status.Support);
-        List<GroupStudent> groupStudents = findFreeGroup(idActivity, false, userCookie, credCookie);
+        List<GroupStudent> groupStudents = getOpen ? matchmakingDao.findAllIncompleteGroups(idActivity)
+                : matchmakingDao.findAllFullGroups(idActivity);
         Optional<GroupStudent> targetStudent = groupStudents.stream().filter(o -> o.getCip().equals(currUser))
                 .findFirst();
         List<GroupStudent> selfGroup = new ArrayList<GroupStudent>();
