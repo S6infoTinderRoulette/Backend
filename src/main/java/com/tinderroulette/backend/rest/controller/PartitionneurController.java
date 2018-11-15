@@ -238,7 +238,7 @@ public class PartitionneurController {
         validator.validate(userCookie, credCookie, Status.Teacher, Status.Admin, Status.Support);
         List<Groups> groups = groupsDao.findByIdClassAndIdGroupType(idClass, idGroupType);
         List<Integer> index = new ArrayList<Integer>();
-        if (!groups.isEmpty()) {
+        if (!groups.isEmpty() && idGroupType != 1) {
             for (Groups group : groups) {
                 index.add(group.getGroupIndex());
             }

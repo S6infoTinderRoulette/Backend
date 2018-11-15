@@ -63,18 +63,36 @@ public class MatchMakingController {
         return groupStudents;
     }
 
-    @GetMapping(value = "/matchmaking/userstatus/{idActivity}/{getOpen}/")
-    public List<GroupStudent> isUserTeamFull(@PathVariable int idActivity, @PathVariable boolean getOpen,
-            @CookieValue("auth_user") Cookie userCookie, @CookieValue("auth_cred") Cookie credCookie) throws Exception {
+    @GetMapping(value = "/matchmaking/userteamfull/{idActivity}/")
+    public boolean isUserTeamFull(@PathVariable int idActivity, @CookieValue("auth_user") Cookie userCookie,
+                                  @CookieValue("auth_cred") Cookie credCookie) throws Exception {
         String currUser = validator.validate(userCookie, credCookie, Status.Student, Status.Admin, Status.Support);
-        List<GroupStudent> groupStudents = getOpen ? matchmakingDao.findAllIncompleteGroups(idActivity)
-                : matchmakingDao.findAllFullGroups(idActivity);
-        Optional<GroupStudent> targetStudent = groupStudents.stream().filter(o -> o.getCip().equals(currUser))
+        List<GroupStudent> fullGroupStudents = matchmakingDao.findAllFullGroups(idActivity);
+        Optional<GroupStudent> targetStudent = fullGroupStudents.stream().filter(o -> o.getCip().equals(currUser))
+                .findFirst();
+        return targetStudent.isPresent();
+    }
+
+    @GetMapping(value = "/matchmaking/userteam/{idActivity}/")
+    public List<GroupStudent> getUserTeam(@PathVariable int idActivity, @CookieValue("auth_user") Cookie userCookie,
+                                  @CookieValue("auth_cred") Cookie credCookie) throws Exception {
+        String currUser = validator.validate(userCookie, credCookie, Status.Student, Status.Admin, Status.Support);
+        List<GroupStudent> fullGroupStudents = matchmakingDao.findAllFullGroups(idActivity);
+        Optional<GroupStudent> studentInFullTeam = fullGroupStudents.stream().filter(o -> o.getCip().equals(currUser))
                 .findFirst();
         List<GroupStudent> selfGroup = new ArrayList<GroupStudent>();
-        if (targetStudent.isPresent()) {
-            selfGroup = groupStudents.stream().filter(o -> o.getIdGroup() == targetStudent.get().getIdGroup())
+        if (studentInFullTeam.isPresent()) {
+            selfGroup = fullGroupStudents.stream().filter(o -> o.getIdGroup() == studentInFullTeam.get().getIdGroup())
                     .collect(Collectors.toList());
+        }
+        else {
+            List<GroupStudent> incompleteGroupStudents = matchmakingDao.findAllIncompleteGroups(idActivity);
+            Optional<GroupStudent> studentInIncompleteTeam = incompleteGroupStudents.stream().filter(o -> o.getCip().equals(currUser))
+                    .findFirst();
+            if (studentInIncompleteTeam.isPresent()) {
+                selfGroup = incompleteGroupStudents.stream().filter(o -> o.getIdGroup() == studentInIncompleteTeam.get().getIdGroup())
+                        .collect(Collectors.toList());
+            }
         }
         return selfGroup;
     }
