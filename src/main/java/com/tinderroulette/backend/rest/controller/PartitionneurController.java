@@ -1,6 +1,5 @@
 package com.tinderroulette.backend.rest.controller;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -8,20 +7,24 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.stream.IntStream;
 
+import javax.servlet.http.Cookie;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tinderroulette.backend.rest.Message;
+import com.tinderroulette.backend.rest.CAS.PrivilegeValidator;
+import com.tinderroulette.backend.rest.CAS.Status;
 import com.tinderroulette.backend.rest.dao.GroupStudentDao;
 import com.tinderroulette.backend.rest.dao.GroupTypeDao;
 import com.tinderroulette.backend.rest.dao.GroupsDao;
@@ -41,17 +44,21 @@ public class PartitionneurController {
     private GroupStudentDao groupStudentDao;
     private GroupTypeDao groupTypeDao;
     private MemberClassDao memberClassDao;
+    private PrivilegeValidator validator;
 
     public PartitionneurController(GroupsDao groupsDao, GroupStudentDao groupStudentDao, GroupTypeDao groupTypeDao,
-            MemberClassDao memberClassDao) {
+            MemberClassDao memberClassDao, PrivilegeValidator validator) {
         this.groupsDao = groupsDao;
         this.groupStudentDao = groupStudentDao;
         this.groupTypeDao = groupTypeDao;
         this.memberClassDao = memberClassDao;
+        this.validator = validator;
     }
 
     @PostMapping(value = "/createGroup/")
-    public List<List<MemberClass>> createGroup(HttpEntity<String> httpEntity) throws Exception {
+    public List<List<MemberClass>> createGroup(HttpEntity<String> httpEntity,
+            @CookieValue("auth_user") Cookie userCookie, @CookieValue("auth_cred") Cookie credCookie) throws Exception {
+        validator.validate(userCookie, credCookie, Status.Teacher, Status.Admin, Status.Support);
         JSONObject params = new JSONObject(httpEntity.getBody());
         List<List<MemberClass>> finalList;
         boolean[] binParam = { params.has("idClass"), params.has("idGroupType"), params.has("nbMember"),
@@ -107,14 +114,14 @@ public class PartitionneurController {
         return optimalValues;
     }
 
-    public List<List<MemberClass>> createGroupNoParam(@PathVariable String idClass) {
+    public List<List<MemberClass>> createGroupNoParam(String idClass) {
         List<List<MemberClass>> memberActivity = new ArrayList<>();
         List<MemberClass> member = memberClassDao.findByIdClass(idClass);
         memberActivity.add(member);
         return memberActivity;
     }
 
-    public List<List<MemberClass>> createGroupNbPerson(@PathVariable String idClass, @PathVariable int nbMember) {
+    public List<List<MemberClass>> createGroupNbPerson(String idClass, int nbMember) {
         List<MemberClass> memberActivity = memberClassDao.findByIdClass(idClass);
         Collections.shuffle(memberActivity);
         List<List<MemberClass>> groups = new ArrayList<>();
@@ -137,7 +144,7 @@ public class PartitionneurController {
         return groups;
     }
 
-    public List<List<MemberClass>> createGroupGroupType(@PathVariable String idClass, @PathVariable int idGroupType) {
+    public List<List<MemberClass>> createGroupGroupType(String idClass, int idGroupType) {
         GroupType groupType = groupTypeDao.findByIdGroupType(idGroupType);
         List<List<MemberClass>> groups = new ArrayList<>();
         List<MemberClass> studentActivity = memberClassDao.findByIdClass(idClass);
@@ -160,8 +167,7 @@ public class PartitionneurController {
         return groups;
     }
 
-    public List<List<MemberClass>> createGroupArraySizes(@PathVariable String idClass, @PathVariable int[] sizes)
-            throws Exception {
+    public List<List<MemberClass>> createGroupArraySizes(String idClass, int[] sizes) throws Exception {
         List<MemberClass> studentActivity = memberClassDao.findByIdClass(idClass);
         if (IntStream.of(sizes).sum() > studentActivity.size()) {
             throw new Exception(Message.PARTITIONNEUR_SUM_EXCEED.toString());
@@ -186,8 +192,7 @@ public class PartitionneurController {
         }
     }
 
-    public List<List<MemberClass>> createGroupGroupTypeAndArray(@PathVariable String idClass,
-            @PathVariable int idGroupType, @PathVariable int[] sizes) {
+    public List<List<MemberClass>> createGroupGroupTypeAndArray(String idClass, int idGroupType, int[] sizes) {
         GroupType groupType = groupTypeDao.findByIdGroupType(idGroupType);
         List<MemberClass> studentActivity = memberClassDao.findByIdClass(idClass);
         Collections.shuffle(studentActivity);
@@ -225,14 +230,33 @@ public class PartitionneurController {
 
     }
 
+    @GetMapping(value = "/existingGroup/index/{idClass}/{idGroupType}/")
+    public List<Integer> getExistingGroupIndex(@PathVariable String idClass, @PathVariable int idGroupType,
+            @CookieValue("auth_user") Cookie userCookie, @CookieValue("auth_cred") Cookie credCookie) throws Exception {
+        validator.validate(userCookie, credCookie, Status.Teacher, Status.Admin, Status.Support);
+        List<Groups> groups = groupsDao.findByIdClassAndIdGroupType(idClass, idGroupType);
+        List<Integer> index = new ArrayList<Integer>();
+        if (!groups.isEmpty()) {
+            for (Groups group : groups) {
+                index.add(group.getGroupIndex());
+            }
+            Collections.sort(index);
+        }
+        return index;
+    }
+
     @GetMapping(value = "/existingGroup/{idClass}/{idGroupType}/{index}/")
     public List<SubGroup> getExistingGroups(@PathVariable String idClass, @PathVariable int idGroupType,
-            @PathVariable int index) {
+            @PathVariable int index, @CookieValue("auth_user") Cookie userCookie,
+            @CookieValue("auth_cred") Cookie credCookie) throws Exception {
+        validator.validate(userCookie, credCookie, Status.Teacher, Status.Admin, Status.Support);
         return reformatSubGroup(groupsDao.findByGroupIndexAndIdClassAndIdGroupType(index, idClass, idGroupType));
     }
 
     @GetMapping(value = "/existingGroup/{idClass}/{idGroupType}/")
-    public List<SubGroup> getTutoratGroup(@PathVariable String idClass, @PathVariable int idGroupType) {
+    public List<SubGroup> getTutoratGroup(@PathVariable String idClass, @PathVariable int idGroupType,
+            @CookieValue("auth_user") Cookie userCookie, @CookieValue("auth_cred") Cookie credCookie) throws Exception {
+        validator.validate(userCookie, credCookie, Status.Teacher, Status.Admin, Status.Support);
         return reformatSubGroup(groupsDao.findByIdClassAndIdGroupType(idClass, idGroupType));
     }
 
@@ -246,7 +270,9 @@ public class PartitionneurController {
 
     @PutMapping(value = "/saveGroup/{idClass}/{idGroupType}/")
     public boolean updateGroup(HttpEntity<String> httpEntity, @PathVariable String idClass,
-            @PathVariable int idGroupType) throws JsonParseException, IOException {
+            @PathVariable int idGroupType, @CookieValue("auth_user") Cookie userCookie,
+            @CookieValue("auth_cred") Cookie credCookie) throws Exception {
+        validator.validate(userCookie, credCookie, Status.Teacher, Status.Admin, Status.Support);
         JSONArray subGroups = new JSONArray(httpEntity.getBody());
         List<SubGroup> subGroupList = Arrays
                 .asList(new ObjectMapper().readValue(subGroups.toString(), SubGroup[].class));
@@ -296,7 +322,9 @@ public class PartitionneurController {
 
     @PostMapping(value = "/saveGroup/{idClass}/{idGroupType}/")
     public ResponseEntity saveGroupWithType(HttpEntity<String> httpEntity, @PathVariable String idClass,
-            @PathVariable int idGroupType) {
+            @PathVariable int idGroupType, @CookieValue("auth_user") Cookie userCookie,
+            @CookieValue("auth_cred") Cookie credCookie) throws Exception {
+        validator.validate(userCookie, credCookie, Status.Teacher, Status.Admin, Status.Support);
         JSONArray classGroups = new JSONArray(httpEntity.getBody());
         saveGroupStudent(classGroups, idClass, idGroupType);
         return new ResponseEntity(new EmptyJsonResponse(), HttpStatus.OK);
