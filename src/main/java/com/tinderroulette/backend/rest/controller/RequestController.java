@@ -50,8 +50,7 @@ public class RequestController {
     @GetMapping(value = "/request/requested/")
     public List<Request> findAllRequested(@CookieValue("auth_user") Cookie userCookie,
             @CookieValue("auth_cred") Cookie credCookie) throws Exception {
-        validator.validate(userCookie, credCookie, Status.Student, Status.Admin, Status.Support);
-        String currUser = ConfigurationController.getAuthUser();
+        String currUser = validator.validate(userCookie, credCookie, Status.Student, Status.Admin, Status.Support);
         return requestDao.findAll().stream().filter(o -> o.getCipRequested().equals(currUser))
                 .collect(Collectors.toList());
     }
