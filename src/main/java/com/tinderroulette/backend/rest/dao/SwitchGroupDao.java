@@ -39,10 +39,6 @@ public class SwitchGroupDao {
             return 0;
         }
 
-        if(result == null) {
-            return 0;
-        }
-
         return (int) result;
     }
 

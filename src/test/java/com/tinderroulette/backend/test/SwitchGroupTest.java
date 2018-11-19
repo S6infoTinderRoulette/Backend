@@ -61,16 +61,16 @@ public class SwitchGroupTest extends AbstractTestExecutionListener {
         groupStudentDao.save(new GroupStudent("member2", g3));
 
         // Test wrong insert request because request sent to the same group_type
-        //assertTrue(switchgroupDao.insertSwitchRequest("member0", "test0", 1) == 0);
+        assertTrue(switchgroupDao.insertSwitchRequest("member0", "test0", 1) == 0);
 
         // Test good insert request on a different group_type
-        //assertTrue(switchgroupDao.insertSwitchRequest("member0", "test0", 2) > 0);
+        assertTrue(switchgroupDao.insertSwitchRequest("member0", "test0", 2) > 0);
 
         // Test wrong accept request on the same member
-        //assertFalse(switchgroupDao.acceptSwitchRequest("member1", "member1", "test0"));
+        assertFalse(switchgroupDao.acceptSwitchRequest("member1", "member1", "test0"));
 
         // Test good accept request on a different member in the
-        //assertTrue(switchgroupDao.acceptSwitchRequest("member0", "member1", "test0"));
+        // assertTrue(switchgroupDao.acceptSwitchRequest("member0", "member1", "test0"));
 
     }
 }
