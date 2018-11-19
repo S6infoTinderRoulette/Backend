@@ -29,12 +29,23 @@ public class SwitchGroupDao {
                 .setParameter(1, cip)
                 .setParameter(2, idClass)
                 .setParameter(3, tutorat);
-        Object result = query.getSingleResult();
+
+        Object result;
+        try {
+
+            result = query.getSingleResult();
+
+        } catch (Exception error) {
+            return 0;
+        }
+
         if(result == null) {
             return 0;
         }
+
         return (int) result;
     }
+
 
     public boolean acceptSwitchRequest(String cipRequested, String cipUser, String idClass) {
         String sql = "SELECT * FROM tinderroulette.accept_switchgroup( ?, ?, ?);";
