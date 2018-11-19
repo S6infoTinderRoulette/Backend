@@ -49,6 +49,16 @@ public class SwitchGroupDao {
                 .setParameter(1, cipRequested)
                 .setParameter(2, cipUser)
                 .setParameter(3, idClass);
-        return (boolean) query.getSingleResult();
+
+        Object result;
+        try {
+
+            result = query.getSingleResult();
+
+        } catch (Exception error) {
+            return false;
+        }
+
+        return (boolean) result;
     }
 }
