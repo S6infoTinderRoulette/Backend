@@ -38,7 +38,11 @@ public enum Message {
     // Partitionneur messages
     PARTITIONNEUR_PARAM_ERROR("Paramètres de post incohérents"),
     PARTITIONNEUR_SUM_EXCEED("La somme des tailles des groupe est inférieure au nombre d'étudiants inscrits !"),
-    PARTITIONNEUR_TUTORAT_EXIST("Ce tutorat existe déjà dans la base de données !");
+    PARTITIONNEUR_TUTORAT_EXIST("Ce tutorat existe déjà dans la base de données !"),
+
+    // Privilege messages
+    PRIVILEGE_INSUFFICIENT("Vous n'avez pas les droits pour cette fonctionnalité");
+
     private final String message;
 
     private Message(String message) {
