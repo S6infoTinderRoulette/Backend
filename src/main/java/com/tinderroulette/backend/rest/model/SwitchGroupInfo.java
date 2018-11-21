@@ -10,15 +10,18 @@ public class SwitchGroupInfo {
 
     private int groupIndex;
 
+    private int groupIndexInit;
+
     public SwitchGroupInfo() {
 
     }
 
-    public SwitchGroupInfo(int idGroup, String cip, String idClass, int groupIndex) {
+    public SwitchGroupInfo(int idGroup, String cip, String idClass, int groupIndex, int groupIndexInit) {
         this.idGroup = idGroup;
         this.cip = cip;
         this.idClass = idClass;
         this.groupIndex = groupIndex;
+        this.groupIndexInit = groupIndexInit;
     }
 
     public int getIdGroup() {
@@ -51,6 +54,14 @@ public class SwitchGroupInfo {
 
     public void setGroupIndex(int groupIndex) {
         this.groupIndex = groupIndex;
+    }
+
+    public int getGroupIndexInit() {
+        return groupIndexInit;
+    }
+
+    public void setGroupIndexInit(int groupIndexInit) {
+        this.groupIndexInit = groupIndexInit;
     }
 
 }
