@@ -1,12 +1,15 @@
 package com.tinderroulette.backend.rest.controller;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import javax.servlet.http.Cookie;
 import javax.validation.Valid;
 
+import org.json.JSONObject;
+import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CookieValue;
@@ -47,8 +50,7 @@ public class RequestController {
     @GetMapping(value = "/request/requested/")
     public List<Request> findAllRequested(@CookieValue("auth_user") Cookie userCookie,
             @CookieValue("auth_cred") Cookie credCookie) throws Exception {
-        validator.validate(userCookie, credCookie, Status.Student, Status.Admin, Status.Support);
-        String currUser = ConfigurationController.getAuthUser();
+        String currUser = validator.validate(userCookie, credCookie, Status.Student, Status.Admin, Status.Support);
         return requestDao.findAll().stream().filter(o -> o.getCipRequested().equals(currUser))
                 .collect(Collectors.toList());
     }
@@ -77,6 +79,28 @@ public class RequestController {
             }
         }
         return duplicateList;
+    }
+
+    @PostMapping(value = "/matchmaking/request/")
+    public ResponseEntity<Void> addRequest(HttpEntity<String> httpEntity, @CookieValue("auth_user") Cookie userCookie,
+            @CookieValue("auth_cred") Cookie credCookie) throws Exception {
+        String cipSeeking = validator.validate(userCookie, credCookie, Status.Student, Status.Admin, Status.Support);
+        JSONObject json = new JSONObject(httpEntity.getBody());
+        String cipRequested = json.getString("cipRequested");
+        int idActivity = json.getInt("idActivity");
+        Request requestTest = requestDao.findByCipRequestedAndCipSeekingAndIdActivity(cipRequested, cipSeeking,
+                idActivity);
+        if (requestTest != null) {
+            throw new RequestIntrouvableException(Message.REQUEST_EXIST.toString());
+        } else {
+            Request requestput = requestDao.save(new Request(idActivity, cipSeeking, cipRequested, new Date()));
+            if (requestput == null) {
+                return ResponseEntity.noContent().build();
+            } else {
+                return new ResponseEntity(new EmptyJsonResponse(), HttpStatus.OK);
+            }
+        }
+
     }
 
     @PostMapping(value = "/request/")

@@ -139,8 +139,7 @@ public class MatchMakingController {
     @DeleteMapping(value = "/matchmaking/{idActivity}/")
     public boolean leaveTeam(@PathVariable int idActivity, @CookieValue("auth_user") Cookie userCookie,
             @CookieValue("auth_cred") Cookie credCookie) throws Exception {
-        validator.validate(userCookie, credCookie, Status.Student, Status.Admin, Status.Support);
-        String currUser = ConfigurationController.getAuthUser();
+        String currUser = validator.validate(userCookie, credCookie, Status.Student, Status.Admin, Status.Support); 
         return matchmakingDao.leaveTeam(currUser, idActivity);
     }
 

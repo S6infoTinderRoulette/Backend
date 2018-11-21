@@ -1,10 +1,15 @@
 package com.tinderroulette.backend.rest.controller;
 
+import java.util.Date;
 import java.util.List;
 
 import javax.servlet.http.Cookie;
 import javax.validation.Valid;
 
+import com.tinderroulette.backend.rest.Message;
+import com.tinderroulette.backend.rest.model.Request;
+import org.json.JSONObject;
+import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CookieValue;
@@ -39,6 +44,27 @@ public class FriendRequestController {
             @CookieValue("auth_cred") Cookie credCookie) throws Exception {
         validator.validate(userCookie, credCookie, Status.Admin, Status.Support);
         return friendRequestDao.findAll();
+    }
+
+    @PostMapping(value = "/friendRequest/request/")
+    public ResponseEntity<Void> addRequest(HttpEntity<String> httpEntity, @CookieValue("auth_user") Cookie userCookie,
+                                           @CookieValue("auth_cred") Cookie credCookie) throws Exception {
+        String cipSeeking = validator.validate(userCookie, credCookie, Status.Student, Status.Admin, Status.Support);
+        JSONObject json = new JSONObject(httpEntity.getBody());
+        String cipRequested = json.getString("cip");
+        int idActivity = json.getInt("idActivity");
+        FriendRequest friendRequestTest = friendRequestDao.findByCipSeekingAndCipRequested(cipSeeking,cipRequested);
+        if (friendRequestTest != null) {
+            throw new RequestIntrouvableException(Message.REQUEST_EXIST.toString());
+        } else {
+            FriendRequest friendRequestput = friendRequestDao.save(new FriendRequest(cipSeeking, cipRequested, new Date()));
+            if (friendRequestput == null) {
+                return ResponseEntity.noContent().build();
+            } else {
+                return new ResponseEntity(new EmptyJsonResponse(), HttpStatus.OK);
+            }
+        }
+
     }
 
     @PostMapping(value = "/friendRequest/")
