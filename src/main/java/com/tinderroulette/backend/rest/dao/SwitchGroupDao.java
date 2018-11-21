@@ -5,6 +5,8 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import com.tinderroulette.backend.rest.model.MemberClass;
+import com.tinderroulette.backend.rest.model.SwitchGroupInfo;
+
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -15,6 +17,13 @@ public class SwitchGroupDao {
     @PersistenceContext
     private EntityManager em;
 
+    public List<SwitchGroupInfo> findUserClassSwitchGroupRequest(String cip){
+        String sql = "SELECT * FROM tinderroulette.get_switch_request(?)";
+        Query query = em.createNativeQuery(sql)
+                .setParameter(1, cip);
+        return (List<SwitchGroupInfo>) query.getResultList();
+    }
+    
     public List<MemberClass> findAllSwitchGroupRequest(String cip, String idClass) {
         String sql = "SELECT * FROM tinderroulette.get_switch_group(?, ?)";
         Query query = em.createNativeQuery(sql)
@@ -29,12 +38,19 @@ public class SwitchGroupDao {
                 .setParameter(1, cip)
                 .setParameter(2, idClass)
                 .setParameter(3, tutorat);
-        Object result = query.getSingleResult();
-        if(result == null) {
+
+        Object result;
+        try {
+
+            result = query.getSingleResult();
+
+        } catch (Exception error) {
             return 0;
         }
+
         return (int) result;
     }
+
 
     public boolean acceptSwitchRequest(String cipRequested, String cipUser, String idClass) {
         String sql = "SELECT * FROM tinderroulette.accept_switchgroup( ?, ?, ?);";
@@ -42,6 +58,16 @@ public class SwitchGroupDao {
                 .setParameter(1, cipRequested)
                 .setParameter(2, cipUser)
                 .setParameter(3, idClass);
-        return (boolean) query.getSingleResult();
+
+        Object result;
+        try {
+
+            result = query.getSingleResult();
+
+        } catch (Exception error) {
+            return false;
+        }
+
+        return (boolean) result;
     }
 }
