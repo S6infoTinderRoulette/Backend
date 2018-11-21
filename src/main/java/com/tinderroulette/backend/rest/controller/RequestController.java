@@ -22,7 +22,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.tinderroulette.backend.rest.Message;
-import com.tinderroulette.backend.rest.CAS.ConfigurationController;
 import com.tinderroulette.backend.rest.CAS.PrivilegeValidator;
 import com.tinderroulette.backend.rest.CAS.Status;
 import com.tinderroulette.backend.rest.dao.RequestDao;
@@ -58,9 +57,17 @@ public class RequestController {
     @GetMapping(value = "/request/seeking/")
     public List<Request> findAllSeeking(@CookieValue("auth_user") Cookie userCookie,
             @CookieValue("auth_cred") Cookie credCookie) throws Exception {
-        validator.validate(userCookie, credCookie, Status.Student, Status.Admin, Status.Support);
-        String currUser = ConfigurationController.getAuthUser();
+        String currUser = validator.validate(userCookie, credCookie, Status.Student, Status.Admin, Status.Support);
         return requestDao.findAll().stream().filter(o -> o.getCipSeeking().equals(currUser))
+                .collect(Collectors.toList());
+    }
+
+    @GetMapping(value = "/request/seeking/{idActivity}/")
+    public List<Request> findAllSeeking(@PathVariable int idActivity, @CookieValue("auth_user") Cookie userCookie,
+            @CookieValue("auth_cred") Cookie credCookie) throws Exception {
+        String currUser = validator.validate(userCookie, credCookie, Status.Student, Status.Admin, Status.Support);
+        return requestDao.findAll().stream()
+                .filter(o -> o.getCipSeeking().equals(currUser) && o.getIdActivity() == idActivity)
                 .collect(Collectors.toList());
     }
 
