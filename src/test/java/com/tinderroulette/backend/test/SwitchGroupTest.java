@@ -1,16 +1,10 @@
 package com.tinderroulette.backend.test;
 
-import java.security.acl.Group;
-import java.util.ArrayList;
-import java.util.Date;
+import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+
 import java.util.List;
 
-import com.tinderroulette.backend.rest.Application;
-import com.tinderroulette.backend.rest.dao.*;
-import com.tinderroulette.backend.rest.model.GroupStudent;
-import com.tinderroulette.backend.rest.model.Groups;
-import com.tinderroulette.backend.rest.model.MemberClass;
-import com.tinderroulette.backend.rest.model.Request;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,9 +15,13 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.support.AbstractTestExecutionListener;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 
-import static org.junit.Assert.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
+import com.tinderroulette.backend.rest.Application;
+import com.tinderroulette.backend.rest.dao.GroupStudentDao;
+import com.tinderroulette.backend.rest.dao.GroupsDao;
+import com.tinderroulette.backend.rest.dao.RequestDao;
+import com.tinderroulette.backend.rest.dao.SwitchGroupDao;
+import com.tinderroulette.backend.rest.model.GroupStudent;
+import com.tinderroulette.backend.rest.model.Groups;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = Application.class)

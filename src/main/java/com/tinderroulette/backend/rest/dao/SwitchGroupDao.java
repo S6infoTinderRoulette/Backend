@@ -5,6 +5,8 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import com.tinderroulette.backend.rest.model.MemberClass;
+import com.tinderroulette.backend.rest.model.SwitchGroupInfo;
+
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -15,6 +17,13 @@ public class SwitchGroupDao {
     @PersistenceContext
     private EntityManager em;
 
+    public List<SwitchGroupInfo> findUserClassSwitchGroupRequest(String cip){
+        String sql = "SELECT * FROM tinderroulette.get_switch_request(?)";
+        Query query = em.createNativeQuery(sql)
+                .setParameter(1, cip);
+        return (List<SwitchGroupInfo>) query.getResultList();
+    }
+    
     public List<MemberClass> findAllSwitchGroupRequest(String cip, String idClass) {
         String sql = "SELECT * FROM tinderroulette.get_switch_group(?, ?)";
         Query query = em.createNativeQuery(sql)

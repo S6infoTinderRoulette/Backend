@@ -1,19 +1,20 @@
 package com.tinderroulette.backend.rest.controller;
 
+import java.util.List;
+
 import javax.servlet.http.Cookie;
 
 import org.springframework.web.bind.annotation.CookieValue;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.tinderroulette.backend.rest.Message;
-import com.tinderroulette.backend.rest.CAS.ConfigurationController;
 import com.tinderroulette.backend.rest.CAS.PrivilegeValidator;
 import com.tinderroulette.backend.rest.CAS.Status;
 import com.tinderroulette.backend.rest.dao.SwitchGroupDao;
+import com.tinderroulette.backend.rest.model.SwitchGroupInfo;
 import com.tinderroulette.backend.rest.notification.NotificationData;
 import com.tinderroulette.backend.rest.notification.NotificationDispatcher;
 
@@ -27,21 +28,26 @@ public class SwitchGroupController {
         this.validator = validator;
     }
 
+    @GetMapping(value = "/switchgroup/request/")
+    public List<SwitchGroupInfo> getSwitchRequest(@CookieValue("auth_user") Cookie userCookie,
+            @CookieValue("auth_cred") Cookie credCookie) throws Exception {
+        String currUser = validator.validate(userCookie, credCookie, Status.Student, Status.Admin, Status.Support);
+        return switchGroupDao.findUserClassSwitchGroupRequest(currUser);
+    }
+
     @ResponseBody
-    @PostMapping(value = "/switchgroup/{idClass}/{tutorat}/")
+    @GetMapping(value = "/switchgroup/request/{idClass}/{tutorat}/")
     public int insertSwitch(@PathVariable String idClass, @PathVariable int tutorat,
             @CookieValue("auth_user") Cookie userCookie, @CookieValue("auth_cred") Cookie credCookie) throws Exception {
-        validator.validate(userCookie, credCookie, Status.Student, Status.Admin, Status.Support);
-        String currUser = ConfigurationController.getAuthUser();
+        String currUser = validator.validate(userCookie, credCookie, Status.Student, Status.Admin, Status.Support);
         return switchGroupDao.insertSwitchRequest(currUser, idClass, tutorat);
     }
 
     @ResponseBody
-    @PutMapping(value = "/switchgroup/{idClass}/{cipRequested}/")
+    @GetMapping(value = "/switchgroup/accept/{idClass}/{cipRequested}/")
     public boolean acceptSwitch(@PathVariable String idClass, @PathVariable String cipRequested,
             @CookieValue("auth_user") Cookie userCookie, @CookieValue("auth_cred") Cookie credCookie) throws Exception {
-        validator.validate(userCookie, credCookie, Status.Student, Status.Admin, Status.Support);
-        String currUser = ConfigurationController.getAuthUser();
+        String currUser = validator.validate(userCookie, credCookie, Status.Student, Status.Admin, Status.Support);
         NotificationData eventData = new NotificationData("Switchrequest",
                 Message.format(Message.SWITCH_SUCCESS, currUser, cipRequested));
         NotificationDispatcher.addEvent(cipRequested, eventData);
