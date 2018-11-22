@@ -48,6 +48,12 @@ Leave group for current user: /matchmaking/{idActivity}/
 #### Switchgroup
 This feature allows student part of a tutoring group to exchange there class with each other. 
 
+GET: 
+Get switchgroup request available for current user: /switchgroup/request/
+Add request for a group change: /switchgroup/request/{idClass}/{tutorat}/
+Accept request for a group change: /switchgroup/accept/{idClass}/{cipRequested}/
+
+
 
 
 ### Contributors
