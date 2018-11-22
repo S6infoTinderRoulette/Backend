@@ -20,9 +20,29 @@ POST:
 Create a group: /createGroup/
 Save group: /saveGroup/{idClass}/{idGroupType}/
 
-* Partitionning sets
-* Requesting teamwork colleague
-* Handling user setting
+* Matchmaking
+This features is tailored for the students as a way to facilitate group formation.
+
+GET: 
+Get existing groups based on activity: /matchmaking/{idActivity}/
+Check if current user is in a full team: /matchmaking/userteamfull/{idActivity}/
+Get current user team: /matchmaking/userteam/{idActivity}/
+Get all free users: /matchmaking/members/{idActivity}/
+Get all groups that are not complete: /matchmaking/groups/{idActivity}/{getOpen}/
+Get current user invitations: /request/requested/
+Get current user sent invitations: /request/seeking/
+Get current user sent invitations for a specific activity: /request/seeking/{idActivity}/
+Get request where both users have invited each other: /request/duplicate/
+
+PUT: 
+Get state of formed teams and allows teacher to lock team modification for said activity: /matchmaking/{idActivity}/{isFinal}/
+
+POST:
+Merge two or more members into a team: /matchmaking/{idActivity}/
+Add invitation for group forming: /matchmaking/request/
+
+DELETE: 
+Leave group for current user: /matchmaking/{idActivity}/
 
 ### Contributors
 
