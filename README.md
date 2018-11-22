@@ -1,10 +1,25 @@
 ## TinderRoulette backend
 
-This is the backend part of the TinderRoulette mobile application. A mobile app that allows users to chose teamwork colleague. In addition, there is a partitioner sets to split groups, procedurals or seminars to speed up the set of a new course for a given professor.
+This is the backend part of the TinderRoulette web application. 
+This application exposes the Partitionner, Matchmaking and Switchgroup features through its REST api and allow students and teachers alike to benefit from these group organizing functionnalities. 
 
 ### Features
 
-* Adding OAUTH2 on top of CAS
+* Partitionner
+This features is targeted for the teachers. This tools allows the user to create multiple kind of groups such as exercise class or laboratories. 
+
+GET:
+Get existing indexes: /existingGroup/index/{idClass}/{idGroupType}/
+Get existing groups with index: /existingGroup/{idClass}/{idGroupType}/{index}/
+Get existing groups disregarding index: /existingGroup/{idClass}/{idGroupType}/
+
+PUT: 
+Update an existing group: /saveGroup/{idClass}/{idGroupType}/
+
+POST: 
+Create a group: /createGroup/
+Save group: /saveGroup/{idClass}/{idGroupType}/
+
 * Partitionning sets
 * Requesting teamwork colleague
 * Handling user setting
