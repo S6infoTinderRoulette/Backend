@@ -43,12 +43,16 @@ public class ActivitiesController {
     }
 
     @GetMapping(value = "/activities/associatedTo/{idClass}/")
-    public List<Activities> findActivitiesAssociated(@PathVariable String idClass){
-        return activitiesDao.findByIdClass (idClass);
+    public List<Activities> findActivitiesAssociated(@PathVariable String idClass,
+            @CookieValue("auth_user") Cookie userCookie, @CookieValue("auth_cred") Cookie credCookie) throws Exception {
+        validator.validate(userCookie, credCookie, Status.Student, Status.Teacher, Status.Admin, Status.Support);
+        return activitiesDao.findByIdClass(idClass);
     }
 
     @GetMapping(value = "/activities/{idActivity}/numberOfPartners/")
-    public int getNumberOfPartners (@PathVariable int idActivity){
+    public int getNumberOfPartners(@PathVariable int idActivity, @CookieValue("auth_user") Cookie userCookie,
+            @CookieValue("auth_cred") Cookie credCookie) throws Exception {
+        validator.validate(userCookie, credCookie, Status.Student, Status.Teacher, Status.Admin, Status.Support);
         Activities activitiesTest = activitiesDao.findByIdActivity(idActivity);
         return activitiesTest.getNbPartners();
     }
