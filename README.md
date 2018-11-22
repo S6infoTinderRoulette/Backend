@@ -6,7 +6,7 @@ This application exposes the Partitionner, Matchmaking and Switchgroup features 
 ### Features
 
 * Partitionner
-This features is targeted for the teachers. This tools allows the user to create multiple kind of groups such as exercise class or laboratories. 
+This features is targeted for the teachers. This tools allows the user to create multiple kind of groups such as exercise classes or laboratories. 
 
 GET:
 Get existing indexes: /existingGroup/index/{idClass}/{idGroupType}/
@@ -43,6 +43,11 @@ Add invitation for group forming: /matchmaking/request/
 
 DELETE: 
 Leave group for current user: /matchmaking/{idActivity}/
+
+* Switchgroup
+This feature allows student part of a tutoring group to exchange there class with each other. 
+
+
 
 ### Contributors
 
