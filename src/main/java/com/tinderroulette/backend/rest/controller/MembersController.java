@@ -35,6 +35,14 @@ public class MembersController {
         this.validator = validator;
     }
 
+    @GetMapping(value = "/findself/")
+    public int findSelf(@CookieValue("auth_user") Cookie userCookie, @CookieValue("auth_cred") Cookie credCookie)
+            throws Exception {
+        String currUser = validator.validate(userCookie, credCookie, Status.Student, Status.Teacher, Status.Admin,
+                Status.Support);
+        return membersDao.findByCip(currUser).getIdMemberStatus();
+    }
+
     @GetMapping(value = "/members/{cip}/")
     public Members findByCip(@PathVariable String cip, @CookieValue("auth_user") Cookie userCookie,
             @CookieValue("auth_cred") Cookie credCookie) throws Exception {
