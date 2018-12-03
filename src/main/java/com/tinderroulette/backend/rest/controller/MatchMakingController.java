@@ -20,13 +20,13 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.tinderroulette.backend.rest.Message;
-import com.tinderroulette.backend.rest.CAS.ConfigurationController;
 import com.tinderroulette.backend.rest.CAS.PrivilegeValidator;
 import com.tinderroulette.backend.rest.CAS.Status;
 import com.tinderroulette.backend.rest.dao.ActivitiesDao;
 import com.tinderroulette.backend.rest.dao.GroupStudentDao;
 import com.tinderroulette.backend.rest.dao.GroupsDao;
 import com.tinderroulette.backend.rest.dao.MatchMakingDao;
+import com.tinderroulette.backend.rest.dao.RequestDao;
 import com.tinderroulette.backend.rest.model.Activities;
 import com.tinderroulette.backend.rest.model.GroupStudent;
 import com.tinderroulette.backend.rest.model.Groups;
@@ -41,14 +41,16 @@ public class MatchMakingController {
     private GroupsDao groupsDao;
     private GroupStudentDao groupStudentDao;
     private ActivitiesDao activitiesDao;
+    private RequestDao requestDao;
 
     public MatchMakingController(MatchMakingDao matchmakingDao, GroupsDao groupsDao, GroupStudentDao groupStudentDao,
-            ActivitiesDao activitiesDao, PrivilegeValidator validator) {
+            ActivitiesDao activitiesDao, RequestDao requestDao, PrivilegeValidator validator) {
         this.matchmakingDao = matchmakingDao;
         this.validator = validator;
         this.groupsDao = groupsDao;
         this.groupStudentDao = groupStudentDao;
         this.activitiesDao = activitiesDao;
+        this.requestDao = requestDao;
     }
 
     @GetMapping(value = "/matchmaking/{idActivity}/")
@@ -65,7 +67,7 @@ public class MatchMakingController {
 
     @GetMapping(value = "/matchmaking/userteamfull/{idActivity}/")
     public boolean isUserTeamFull(@PathVariable int idActivity, @CookieValue("auth_user") Cookie userCookie,
-                                  @CookieValue("auth_cred") Cookie credCookie) throws Exception {
+            @CookieValue("auth_cred") Cookie credCookie) throws Exception {
         String currUser = validator.validate(userCookie, credCookie, Status.Student, Status.Admin, Status.Support);
         List<GroupStudent> fullGroupStudents = matchmakingDao.findAllFullGroups(idActivity);
         Optional<GroupStudent> targetStudent = fullGroupStudents.stream().filter(o -> o.getCip().equals(currUser))
@@ -75,7 +77,7 @@ public class MatchMakingController {
 
     @GetMapping(value = "/matchmaking/userteam/{idActivity}/")
     public List<GroupStudent> getUserTeam(@PathVariable int idActivity, @CookieValue("auth_user") Cookie userCookie,
-                                  @CookieValue("auth_cred") Cookie credCookie) throws Exception {
+            @CookieValue("auth_cred") Cookie credCookie) throws Exception {
         String currUser = validator.validate(userCookie, credCookie, Status.Student, Status.Admin, Status.Support);
         List<GroupStudent> fullGroupStudents = matchmakingDao.findAllFullGroups(idActivity);
         Optional<GroupStudent> studentInFullTeam = fullGroupStudents.stream().filter(o -> o.getCip().equals(currUser))
@@ -84,13 +86,13 @@ public class MatchMakingController {
         if (studentInFullTeam.isPresent()) {
             selfGroup = fullGroupStudents.stream().filter(o -> o.getIdGroup() == studentInFullTeam.get().getIdGroup())
                     .collect(Collectors.toList());
-        }
-        else {
+        } else {
             List<GroupStudent> incompleteGroupStudents = matchmakingDao.findAllIncompleteGroups(idActivity);
-            Optional<GroupStudent> studentInIncompleteTeam = incompleteGroupStudents.stream().filter(o -> o.getCip().equals(currUser))
-                    .findFirst();
+            Optional<GroupStudent> studentInIncompleteTeam = incompleteGroupStudents.stream()
+                    .filter(o -> o.getCip().equals(currUser)).findFirst();
             if (studentInIncompleteTeam.isPresent()) {
-                selfGroup = incompleteGroupStudents.stream().filter(o -> o.getIdGroup() == studentInIncompleteTeam.get().getIdGroup())
+                selfGroup = incompleteGroupStudents.stream()
+                        .filter(o -> o.getIdGroup() == studentInIncompleteTeam.get().getIdGroup())
                         .collect(Collectors.toList());
             }
         }
@@ -115,8 +117,13 @@ public class MatchMakingController {
     public List<MemberClass> findFreeMembers(@PathVariable int idActivity, @CookieValue("auth_user") Cookie userCookie,
             @CookieValue("auth_cred") Cookie credCookie) throws Exception {
         String currUser = validator.validate(userCookie, credCookie, Status.Student, Status.Admin, Status.Support);
-        return matchmakingDao.findAllFreeUser(idActivity).stream().filter(o -> !o.getCip().equals(currUser))
-                .collect(Collectors.toList());
+        List<String> sentRequests = requestDao.findAll().stream()
+                .filter(o -> o.getCipSeeking().equals(currUser) && o.getIdActivity() == idActivity)
+                .map(o -> o.getCipRequested()).collect(Collectors.toList());
+        List<MemberClass> freeMembers = matchmakingDao.findAllFreeUser(idActivity).stream()
+                .filter(o -> !o.getCip().equals(currUser)).collect(Collectors.toList());
+        freeMembers.removeIf(o -> sentRequests.contains(o.getCip()));
+        return freeMembers;
     }
 
     @GetMapping(value = "/matchmaking/groups/{idActivity}/{getOpen}/")
@@ -128,6 +135,12 @@ public class MatchMakingController {
         if (getOpen) {
             Optional<GroupStudent> targetStudent = groupStudents.stream().filter(o -> o.getCip().equals(currUser))
                     .findFirst();
+            List<String> sentRequests = requestDao.findAll().stream()
+                    .filter(o -> o.getCipSeeking().equals(currUser) && o.getIdActivity() == idActivity)
+                    .map(o -> o.getCipRequested()).collect(Collectors.toList());
+            for (String sentCip : sentRequests) {
+                groupStudents.removeIf(o -> o.getIdGroup() == groupStudentDao.findByCip(sentCip).getIdGroup());
+            }
             if (targetStudent.isPresent()) {
                 groupStudents = groupStudents.stream().filter(o -> o.getIdGroup() != targetStudent.get().getIdGroup())
                         .collect(Collectors.toList());
@@ -139,7 +152,7 @@ public class MatchMakingController {
     @DeleteMapping(value = "/matchmaking/{idActivity}/")
     public boolean leaveTeam(@PathVariable int idActivity, @CookieValue("auth_user") Cookie userCookie,
             @CookieValue("auth_cred") Cookie credCookie) throws Exception {
-        String currUser = validator.validate(userCookie, credCookie, Status.Student, Status.Admin, Status.Support); 
+        String currUser = validator.validate(userCookie, credCookie, Status.Student, Status.Admin, Status.Support);
         return matchmakingDao.leaveTeam(currUser, idActivity);
     }
 
